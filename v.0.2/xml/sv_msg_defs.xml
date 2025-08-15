@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mavlink>
+  <version>2</version>
+  <enums>
+    <enum name="SV_LAYOUT_MODE">
+      <description>Layout mode; high nibble often encodes view count.</description>
+      <entry value="0"  name="SV_LAYOUT_SINGLE"/>
+      <entry value="16" name="SV_LAYOUT_2VIEWS"/>
+      <entry value="32" name="SV_LAYOUT_3VIEWS"/>
+      <entry value="48" name="SV_LAYOUT_4VIEWS"/>
+    </enum>
+
+    <enum name="SV_DETECTION_OVERLAY_MODE">
+      <entry value="0" name="SV_DET_OVERLAY_NONE"/>
+      <entry value="1" name="SV_DET_OVERLAY_BOXES"/>
+      <entry value="2" name="SV_DET_OVERLAY_HEATMAP"/>
+    </enum>
+
+    <enum name="SV_DETECTION_MODE">
+      <entry value="0" name="SV_DET_OFF"/>
+      <entry value="1" name="SV_DET_CROP"/>
+      <entry value="2" name="SV_DET_VAR"/>
+      <entry value="3" name="SV_DET_CROP_AND_VAR"/>
+    </enum>
+
+    <enum name="SV_SORTING_MODE">
+      <entry value="0" name="SV_SORT_NONE"/>
+      <entry value="1" name="SV_SORT_SCORE"/>
+      <entry value="2" name="SV_SORT_DISTANCE"/>
+    </enum>
+
+    <enum name="SV_TARGETING_MODE">
+      <entry value="0" name="SV_TGT_OFF"/>
+      <entry value="1" name="SV_TGT_MANUAL"/>
+      <entry value="2" name="SV_TGT_ROI"/>
+      <entry value="3" name="SV_TGT_GPS"/>
+    </enum>
+
+    <enum name="SV_CROP_MODE">
+      <entry value="0" name="SV_CROP_OFF"/>
+      <entry value="1" name="SV_CROP_CENTER"/>
+      <entry value="2" name="SV_CROP_ROI"/>
+    </enum>
+
+    <enum name="SV_DEPTH_ESTIMATION_MODE">
+      <entry value="0" name="SV_DEPTH_OFF"/>
+      <entry value="1" name="SV_DEPTH_FIXED"/>
+      <entry value="2" name="SV_DEPTH_STEREO"/>
+    </enum>
+  </enums>
+
+  <messages>
+    <message id="40000" name="SV_SYSTEM_STATUS_PARAMETERS">
+      <description>System status and error codes.</description>
+      <field type="uint8_t" name="status">System status code.</field>
+      <field type="uint8_t" name="error">System error code.</field>
+    </message>
+
+    <message id="40001" name="SV_AI_PARAMETERS">
+      <description>AI runtime switch and model selection.</description>
+      <field type="uint8_t"  name="run_ai">1 to run AI, 0 to stop.</field>
+      <field type="char[16]" name="crop_model_name">Crop model name.</field>
+      <field type="char[16]" name="var_model_name">VAR model name.</field>
+    </message>
+
+    <message id="40002" name="SV_MODEL_PARAMETERS">
+      <description>Generic model selection.</description>
+      <field type="char[16]" name="model_name">Model name.</field>
+    </message>
+
+    <message id="40003" name="SV_VIDEO_OUTPUT_PARAMETERS">
+      <description>Video output settings and view/overlay boxes.</description>
+      <!-- bounding_box views[4] -->
+      <field type="uint16_t[4]" name="views_x">View x (px).</field>
+      <field type="uint16_t[4]" name="views_y">View y (px).</field>
+      <field type="uint16_t[4]" name="views_w">View w (px).</field>
+      <field type="uint16_t[4]" name="views_h">View h (px).</field>
+      <!-- detection_overlay_box -->
+      <field type="uint16_t" name="overlay_x">Overlay x (px).</field>
+      <field type="uint16_t" name="overlay_y">Overlay y (px).</field>
+      <field type="uint16_t" name="overlay_w">Overlay w (px).</field>
+      <field type="uint16_t" name="overlay_h">Overlay h (px).</field>
+      <!-- other -->
+      <field type="uint16_t" name="width">Output width (px).</field>
+      <field type="uint16_t" name="height">Output height (px).</field>
+      <field type="uint16_t" name="single_detection_size">Single detection size (px or units).</field>
+      <field type="uint8_t"  name="fps">Frames per second.</field>
+      <field type="uint8_t"  name="layout_mode" enum="SV_LAYOUT_MODE">Layout mode.</field>
+      <field type="uint8_t"  name="detection_overlay_mode" enum="SV_DETECTION_OVERLAY_MODE">Overlay mode.</field>
+      <field type="char[8]"  name="stream_name">Stream name.</field>
+    </message>
+
+    <message id="40004" name="SV_CAPTURE_PARAMETERS">
+      <description>Capture controls and counters.</description>
+      <field type="uint16_t" name="images_captured">Number of images captured.</field>
+      <field type="uint16_t" name="videos_captured">Number of videos captured.</field>
+      <field type="uint8_t"  name="cap_single_image">1=single still capture.</field>
+      <field type="uint8_t"  name="record_video">1=record video.</field>
+      <field type="char[8]"  name="stream_name">Stream name.</field>
+    </message>
+
+    <message id="40005" name="SV_DETECTION_PARAMETERS">
+      <description>Detection thresholds, limits, and heuristics.</description>
+      <field type="float"    name="crop_confidence_threshold">[0..1]</field>
+      <field type="float"    name="var_confidence_threshold">[0..1]</field>
+      <field type="float"    name="crop_box_overlap">[0..1]</field>
+      <field type="float"    name="var_box_overlap">[0..1]</field>
+      <field type="uint16_t" name="crop_box_limit">Max CROP boxes.</field>
+      <field type="uint16_t" name="var_box_limit">Max VAR boxes.</field>
+      <field type="uint8_t"  name="mode" enum="SV_DETECTION_MODE">Detection mode.</field>
+      <field type="uint8_t"  name="sorting_mode" enum="SV_SORTING_MODE">Sorting mode.</field>
+      <field type="uint8_t"  name="creation_score_scale">Heuristic weight.</field>
+      <field type="uint8_t"  name="bonus_detection_scale">Heuristic weight.</field>
+      <field type="uint8_t"  name="bonus_redetection_scale">Heuristic weight.</field>
+      <field type="uint8_t"  name="missed_detection_penalty">Heuristic penalty.</field>
+      <field type="uint8_t"  name="missed_redetection_penalty">Heuristic penalty.</field>
+    </message>
+
+    <message id="40006" name="SV_DETECTED_ROI_PARAMETERS">
+      <description>One detected ROI and related pose/geo info.</description>
+      <field type="float"   name="yaw_abs">Absolute yaw.</field>
+      <field type="float"   name="pitch_abs">Absolute pitch.</field>
+      <field type="float"   name="yaw_rel">Relative yaw.</field>
+      <field type="float"   name="pitch_rel">Relative pitch.</field>
+      <field type="float"   name="latitude">Latitude (deg).</field>
+      <field type="float"   name="longitude">Longitude (deg).</field>
+      <field type="float"   name="altitude">Altitude (m).</field>
+      <field type="float"   name="distance">Distance (m).</field>
+      <field type="uint8_t" name="index">ROI index.</field>
+      <field type="uint8_t" name="score">Score (0–100 or app-defined).</field>
+      <field type="uint8_t" name="total_detections">Total detections in frame.</field>
+    </message>
+
+    <message id="40007" name="SV_CAM_TARGETING_PARAMETERS">
+      <description>Targeting commands for a camera/stream.</description>
+      <field type="float"   name="yaw">Yaw.</field>
+      <field type="float"   name="pitch">Pitch.</field>
+      <field type="float"   name="roll">Roll.</field>
+      <field type="float"   name="x_offset">X offset [-1..1 or px].</field>
+      <field type="float"   name="y_offset">Y offset [-1..1 or px].</field>
+      <field type="float"   name="target_latitude">Target latitude (deg).</field>
+      <field type="float"   name="target_longitude">Target longitude (deg).</field>
+      <field type="float"   name="target_altitude">Target altitude (m).</field>
+      <field type="uint8_t" name="cam_id">Camera ID.</field>
+      <field type="uint8_t" name="targeting_mode" enum="SV_TARGETING_MODE">Targeting mode.</field>
+      <field type="uint8_t" name="euler_delta">1 if yaw/pitch/roll are deltas.</field>
+      <field type="uint8_t" name="lock_flags">Bitmask for lock behavior.</field>
+      <field type="char[8]" name="stream_name">Stream name.</field>
+    </message>
+
+    <message id="40008" name="SV_CAM_OPTICS_AND_CONTROL_PARAMETERS">
+      <description>Optics and basic camera controls.</description>
+      <field type="float"   name="fov">Field of view (deg).</field>
+      <field type="uint8_t" name="cam_id">Camera ID.</field>
+      <field type="int8_t"  name="zoom">Zoom step/value.</field>
+      <field type="uint8_t" name="crop_mode" enum="SV_CROP_MODE">Crop mode.</field>
+      <field type="char[8]" name="stream_name">Stream name.</field>
+    </message>
+
+    <message id="40009" name="SV_CAM_OFFSET_PARAMETERS">
+      <description>Offsets and pose deltas for a camera.</description>
+      <field type="float"   name="x">X offset [-1..1].</field>
+      <field type="float"   name="y">Y offset [-1..1].</field>
+      <field type="float"   name="yaw_abs">Absolute yaw.</field>
+      <field type="float"   name="pitch_abs">Absolute pitch.</field>
+      <field type="float"   name="yaw_rel">Relative yaw.</field>
+      <field type="float"   name="pitch_rel">Relative pitch.</field>
+      <field type="uint8_t" name="cam_id">Camera ID.</field>
+      <field type="char[8]" name="stream_name">Stream name.</field>
+    </message>
+
+    <message id="40010" name="SV_SENSOR_PARAMETERS">
+      <description>Sensor exposure/gain limits.</description>
+      <field type="uint32_t" name="min_exposure">Min exposure (µs or units).</field>
+      <field type="uint32_t" name="max_exposure">Max exposure.</field>
+      <field type="uint32_t" name="min_gain">Min gain (ISO or units).</field>
+      <field type="uint32_t" name="max_gain">Max gain.</field>
+    </message>
+
+    <message id="40011" name="SV_CAM_DEPTH_ESTIMATION_PARAMETERS">
+      <description>Depth estimation mode and (optional) fixed depth.</description>
+      <field type="float"   name="depth">Depth value (m) when FIXED.</field>
+      <field type="uint8_t" name="cam_id">Camera ID.</field>
+      <field type="uint8_t" name="depth_estimation_mode" enum="SV_DEPTH_ESTIMATION_MODE">Depth estimation mode.</field>
+      <field type="char[8]" name="stream_name">Stream name.</field>
+    </message>
+  </messages>
+</mavlink>
