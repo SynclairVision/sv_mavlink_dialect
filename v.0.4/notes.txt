@@ -1,0 +1,175 @@
+<!-- 
+  2025-11-23 
+  commit verion:
+  e1af301bd47ddaa265e629ddab2a652b6f5654bf
+
+  git länk:
+  https://github.com/SynclairVision/message-definitions/blob/main/msg_defs.hpp
+-->
+
+
+Anteckningar från Filip:
+
+Detta är en fil som jag använder för att komma ihåg hur mavlink protokollet fungerar. Spontana anteckningar inget vackert.
+
+/v.0.4/xml/sv_msg_defs.xml är baserat på msg_defs.hpp från repot där uppe. Jag har också lagt till vilken commit version jag jobbar från. 
+
+När jag gör denna översättning från msg_defs.hpp till sv_msg_defs.xml finns det vissa begränsningar i hur man representerar typer från .cpp -> .xml. 
+Detta är pga att protokollet mavlink, och sin tur mavlink generator, har en begränsad mängd typer som kan användas när mavlink frames skickas.
+T.ex.: Det finns inga booleans ;^(
+Man kan tänka sig att det finns ett litet set av primitiva C liknande typer som kan användas. Detta är gemensamt för både version 1 och 2 av mavlink.
+
+
+Det finns två versioner av mavlink. 1 och 2. 
+Vi kommer att hålla oss till ver. 2. 
+
+Processen av att skapa ett medelande för att skicka mellan olika enheter via mavlink protokollet börjar med denna .xml fil.
+Vi definierar hur våra medelande ska vara strukturerade och vilka typer de ska ha, sen så skickar vi in denna filen till mavlink generator.
+Mavlink generator spottar ut antingen C eller python kod som vi kan sedan använda i våra program!
+
+
+MAVLINK FRAME 
+    En mavlink ver. 2 frame ser ut som följande när den skickas (inte gjort beskrivningen själv, tack ChatGPT):
+
+    STX | LEN | INCOMPAT_FLAGS | COMPAT_FLAGS | SEQ | SYSID | COMPID | MSGID[3] | PAYLOAD[...] | CRC[2] | SIGNATURE[13]?
+
+    STX (1 byte)
+        Start-of-frame marker
+        MAVLink 2: 0xFD
+        MAVLink 1: 0xFE
+
+    LEN (1 byte)
+        Length of payload in bytes (0–255)
+        Does not include header, CRC or signature. Just payload.
+
+    INCOMPAT_FLAGS (1 byte)
+        Flags that, if not understood, mean you must not decode the message.
+        Usually 0x00 for many simple messages.
+
+    COMPAT_FLAGS (1 byte)
+        Flags that can be safely ignored if not understood.
+        Usually 0x00 too.
+
+    SEQ (1 byte)
+        Sequence number 0–255, increments per message per sender.
+        Used for detecting drops / ordering.
+
+    SYSID (1 byte)
+        ID of the sending system (e.g. 1 = autopilot, 2 = companion computer, etc).
+
+    COMPID (1 byte)
+        Component ID within the system (e.g. 1 = autopilot, 100 = camera, 200 = your AI box, etc).
+
+    MSGID (3 bytes, little-endian)
+        Message ID, but split into three bytes:
+            msgid0 (LSB)
+            msgid1
+            msgid2 (MSB)
+        So msgid = msgid0 + 256 * msgid1 + 65536 * msgid2
+
+    PAYLOAD (LEN bytes)
+        The actual data fields (your uint8, uint16, float, arrays, …) in a packed C struct style.
+
+    CRC (2 bytes, little-endian)
+        CRC-16/MCRF4XX over header+payload plus an extra per-message CRC seed.
+        Low byte first, then high byte.
+
+    SIGNATURE (optional, 13 bytes)
+        Only present if the sign flag in INCOMPAT_FLAGS is set.
+        Layout: [link_id (1) | timestamp (6) | signature (6)]
+
+
+Om vi räknar ihop max storleken på ett mavlink ver. 2 frame så ser vi att:
+Min storlek = 12 bytes   (tom payload och ingen signering)
+Max storlek = 280 bytes  (255 byte payload och signering)
+
+Så vilka typer får användas i mavlink?
+    Signed integers
+    | XML Type   | C Type     | Size |
+    | ---------  | ---------  | ---- |
+    | `int8_t`   | `int8_t`   | 1 B  |
+    | `int16_t`  | `int16_t`  | 2 B  |
+    | `int32_t`  | `int32_t`  | 4 B  |
+    | `int64_t`  | `int64_t`  | 8 B  |
+
+    Unsigned integers
+    | XML Type   | C Type     | Size |
+    | ---------- | ---------- | ---- |
+    | `uint8_t`  | `uint8_t`  | 1 B  |
+    | `uint16_t` | `uint16_t` | 2 B  |
+    | `uint32_t` | `uint32_t` | 4 B  |
+    | `uint64_t` | `uint64_t` | 8 B  |
+
+    Floating point
+    | XML Type   | C Type     | Size |
+    | --------   | --------   | ---- |
+    | `float`    | `float`    | 4 B  | (Rekomenderas pga bandwidth)
+    | `double`   | `double`   | 8 B  | (Rekomenderas EJ pga bandwidth)
+
+    Character arrays
+    | XML Type   | Meaning           | Size    |
+    | ---------  | ----------------- | ------- |
+    | `char`     | char (byte)       | 1 B     |
+    | `char[N]`  | fixed-size string | N bytes | 
+
+Precis som I char[N] så kan man skapa en array av alla typer, tex int8_t[N], så länge den totala payload storleken är <= 255 bytes.
+
+Ex medelande:
+<message id="1" name="BIG_MESSAGE">
+  <field type="uint8_t[200]" name="arr1"/>
+  <field type="uint16_t"    name="val1"/>
+  <field type="float"       name="f1"/>
+</message>
+
+  200 bytes: (uint8_t[200]) 1 * 200
+  + 2 bytes: (uint16_t)     2 * 1
+  + 4 bytes: (float)        4 * 1
+= 206 bytes
+  206 <= 255. OK!
+
+
+
+Nu fattar vi begränsningarna för Mavlink typerna. Jag tänker nu gå igenom hela msg_defs.hpp filen och förklara vad som funkar o vad som e fucked.
+
+Efter alla #include's:
+
+Dessa constexpr används av Cpp kompileraren för att byta variabel namn till dessa värden. 
+Vi använder inte dessa i vår mavlink medelande men det finns bra info att veta:
+    static constexpr uint32_t PARAMCOUNT            = 64;       // Max storlek av data är 64 bytes. Borde kunna sparas i en uint8_t typ.
+    static constexpr uint32_t VERSION               = 0x00;     // Versionen av medelande är alltid 0? Har inte ändrats från de olika commits. 
+
+    static constexpr float    U16_MAX_F             = 65535.0f; // Används inte i filen men borde användas för casting/normalisering?
+    static constexpr float    S16_MAX_F             = 32767.0f; // Används för att casta float <-> int16_t
+
+    static constexpr uint8_t  CAP_FLAG_SINGLE_IMAGE = 0x01;     // Bit maps som beskriver 
+    static constexpr uint8_t  CAP_FLAG_VIDEO        = 0x02;
+
+    static constexpr uint32_t STREAM_NAME_SIZE      = 8;        // Max storlek av stream namn ska vara 8 bytes. Borde osså kunna sparas i en uint8_t. 
+
+
+
+Nu går vi till enums:
+    PARAM_TYPE kan ha "värdet" av de följande interna värde. De interna värden mappas till 0-17.
+    enum PARAM_TYPE : uint8_t {
+        ...
+    }
+
+    MESSAGE_TYPE kan ha "värdet" av de följande interna värde. De mappas till 0-8 och QUIT mappas till 255.
+    enum MESSAGE_TYPE : uint8_t {
+        ...
+    }
+
+
+struct message är hur C sidan ska packetera och skicka iväg ett medelande.
+
+struct message {
+    uint64_t timestamp;         // Tid
+    uint8_t  version;           // Kommer alltid vara 0?
+    uint8_t  message_type;      // Kommer att kunna gå från 0-255. Ok!
+    uint8_t  param_type;        // Kommer att kunna gå från 0-17. Ok!
+    uint8_t  data[PARAMCOUNT];  // data är en rå byte-buffert. Beror på vilken PARAM_TYPE som skickas.
+    uint8_t checksum;           // Används inte i denna filen men kanske används för att kolla om medelandet har kommit igenom ordentligt. Mavlink har redan en inbygd "checksum" i CRC
+};
+
+
+

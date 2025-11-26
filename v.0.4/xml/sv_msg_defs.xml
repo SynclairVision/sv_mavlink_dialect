@@ -1,0 +1,544 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mavlink>
+  <version>2</version>
+  <!-- 
+  2025-11-23 
+  commit version:
+  e1af301bd47ddaa265e629ddab2a652b6f5654bf
+
+  msg_defs.hpp:
+  https://github.com/SynclairVision/message-definitions/blob/main/msg_defs.hpp
+  -->
+
+  <enums>
+
+    <enum name="PARAM_TYPE">
+      <description>Parameter type identifiers, mirroring DigiView's PARAM_TYPE: each value selects which parameter block is encoded in the data payload.</description>
+
+      <entry value="0"  name="SYSTEM_STATUS">
+        <description>System status: indicates whether the system is idle, running, finished, or in error.</description>
+      </entry>
+      <entry value="1"  name="GENERAL_SETTINGS">
+        <description>General system settings such as resolution, ROI, FPS, and AI enable flag.</description>
+      </entry>
+      <entry value="2"  name="PARAM_MODEL">
+        <description>Model names available to the system (used by GENERAL_SETTINGS for scanning / tracking models).</description>
+      </entry>
+      <entry value="3"  name="VIDEO_OUTPUT">
+        <description>Video output configuration: total output resolution, layout, overlay, and view bounding boxes.</description>
+      </entry>
+      <entry value="4"  name="SCAPTURE">
+        <description>Capture control and counters (single image / video capture).</description>
+      </entry>
+      <entry value="5"  name="DETECTION">
+        <description>AI post-processing parameters and scoring/overlap settings for detections.</description>
+      </entry>
+      <entry value="6"  name="DETECTED_ROI">
+        <description>Information about one or more detected regions of interest (ROIs).</description>
+      </entry>
+      <entry value="7"  name="SLENS">
+        <description>Which lens parameters to use when doing undistortion calculations.</description>
+      </entry>
+      <entry value="8"  name="CAM_EULER">
+        <description>User camera direction in Euler angles relative to the world.</description>
+      </entry>
+      <entry value="9"  name="CAM_ZOOM">
+        <description>Digital zoom control for user-controlled cameras.</description>
+      </entry>
+      <entry value="10" name="CAM_LOCK_FLAGS">
+        <description>Lock flags for user-controlled cameras' roll/pitch/yaw.</description>
+      </entry>
+      <entry value="11" name="CAM_CONTROL_MODE">
+        <description>Gimbal / control mode for user-controlled cameras.</description>
+      </entry>
+      <entry value="12" name="CAM_CROP_MODE">
+        <description>Output cropping mode for user-controlled cameras.</description>
+      </entry>
+      <entry value="13" name="CAM_OFFSET">
+        <description>Utility for translating a normalized frame position to Euler angles and offsets.</description>
+      </entry>
+      <entry value="14" name="CAM_FOV">
+        <description>Field-of-view configuration for user-controlled cameras.</description>
+      </entry>
+      <entry value="15" name="CAM_TARGET">
+        <description>Geographic targeting (lat/lon/alt) or frame-relative targeting for user-controlled cameras.</description>
+      </entry>
+      <entry value="16" name="CAM_SENSOR">
+        <description>Camera sensor exposure/gain limits and target brightness.</description>
+      </entry>
+      <entry value="17" name="CAM_DEPTH_ESTIMATION">
+        <description>Depth estimation configuration and current estimated depth.</description>
+      </entry>
+    </enum>
+
+    <enum name="MESSAGE_TYPE">
+      <description>Application-level message type, mirroring DigiView's MESSAGE_TYPE. Chooses whether a packet is a GET/SET/CURRENT_PARAMETERS, etc.</description>
+
+      <entry value="0"   name="EMPTY">
+        <description>Empty message (no parameters).</description>
+      </entry>
+      <entry value="1"   name="GET_PARAMETERS">
+        <description>Request current parameters from DigiView for the specified PARAM_TYPE.</description>
+      </entry>
+      <entry value="2"   name="SET_PARAMETERS">
+        <description>Instructs DigiView to set parameters for the specified PARAM_TYPE.</description>
+      </entry>
+      <entry value="3"   name="CURRENT_PARAMETERS">
+        <description>Response flag used by DigiView, indicating the message contains the current parameters in use.</description>
+      </entry>
+      <entry value="4"   name="ACKNOWLEDGEMENT">
+        <description>Indicates that a previous SET_PARAMETERS request was successfully applied.</description>
+      </entry>
+      <entry value="5"   name="CHECKSUM_ERROR">
+        <description>The checksum of the previous message did not match the transmitted checksum.</description>
+      </entry>
+      <entry value="6"   name="DATA_ERROR">
+        <description>DigiView could not interpret the data received (invalid payload format or values).</description>
+      </entry>
+      <entry value="7"   name="FORBIDDEN">
+        <description>The sender does not have permission to perform the requested action(s).</description>
+      </entry>
+      <entry value="8"   name="UNKNOWN">
+        <description>The supplied message or parameter type is unknown to DigiView.</description>
+      </entry>
+      <entry value="255" name="QUIT">
+        <description>Instructs DigiView to stop execution and terminate.</description>
+      </entry>
+    </enum>
+
+  </enums>
+
+  <messages>
+
+    <!-- PARAM_TYPE = SYSTEM_STATUS (0) -->
+    <message id="40000" name="SYSTEM_STATUS_PARAMETERS">
+      <description>
+        System status and error codes. Used as a GET-only message to query whether the system is idle, running, finished, or has encountered an error.
+      </description>
+
+      <field type="uint8_t" name="status">
+        Current operational status: 0=idle, 1=running, 2=finished, 3=error.
+      </field>
+      <field type="uint8_t" name="error">
+        Reserved system error code. Currently unused and expected to be 0.
+      </field>
+    </message>
+
+    <!-- PARAM_TYPE = GENERAL_SETTINGS (1) -->
+    <message id="40001" name="GENERAL_SETTINGS_PARAMETERS">
+      <description>
+        General settings for the system, including camera resolution, region-of-interest (ROI), frame rate, AI enable flag, and model names for scanning/tracking.
+      </description>
+    
+      <field type="uint16_t" name="camera_width">
+        Camera sensor width in pixels. Must match a supported sensor resolution.
+      </field>
+      <field type="uint16_t" name="camera_height">
+        Camera sensor height in pixels. Must match a supported sensor resolution.
+      </field>
+      <field type="uint16_t" name="roi_width">
+        Region-of-interest width in pixels. Must be ≤ camera_width.
+      </field>
+      <field type="uint16_t" name="roi_height">
+        Region-of-interest height in pixels. Must be ≤ camera_height.
+      </field>
+      <field type="uint8_t"  name="camera_fps">
+        Camera frame rate in FPS. Typical valid range is [1,30].
+      </field>
+      <field type="uint8_t"  name="run_ai">
+        Flag to enable or disable AI processing: 0=disabled, 1=enabled.
+      </field>
+      <field type="char[16]" name="crop_model_name">
+        Name of the model used for scanning / detection. Returned on GET; typically selected using MODEL_PARAMETERS.
+      </field>
+      <field type="char[16]" name="var_model_name">
+        Name of the model used for tracking. Returned on GET; typically selected using MODEL_PARAMETERS.
+      </field>
+    </message>
+
+    <!-- PARAM_TYPE = MODEL (2) -->
+    <message id="40002" name="MODEL_PARAMETERS">
+      <description>
+        Model information. On GET, DigiView returns one message per available model. These names can be used in GENERAL_SETTINGS to select scanning/tracking models.
+      </description>
+
+      <field type="char[16]" name="model_name">
+        Name of a single model available in the system.
+      </field>
+    </message>
+
+    <!-- PARAM_TYPE = VIDEO_OUTPUT (3) -->
+    <message id="40003" name="VIDEO_OUTPUT_PARAMETERS">
+      <description>
+        Video output configuration for DigiView: total output resolution, frame rate, layout of user-controlled cameras, detection overlay mode, and view bounding boxes.
+        The GET version returns the active layout and overlay configuration.
+      </description>
+
+      <field type="char[8]"   name="stream_name">
+        Name/identifier of the video stream.
+      </field>
+      <field type="uint16_t"  name="width">
+        Total output width in pixels, including user cameras and detection overlays.
+      </field>
+      <field type="uint16_t"  name="height">
+        Total output height in pixels, including user cameras and detection overlays.
+      </field>
+      <field type="uint8_t"   name="fps">
+        Output frame rate in FPS. Currently not actively used by DigiView (implementation dependent).
+      </field>
+      <field type="uint8_t"   name="layout_mode">
+        Layout mode for user-controlled cameras. On GET, lower 4 bits = layout mode, upper 4 bits = number of active user-controlled cameras.
+      </field>
+      <field type="uint8_t"   name="detection_overlay_mode">
+        Detection overlay mode, controlling how detection cameras are arranged (none, row/column overlays, picture-in-picture, etc.).
+      </field>
+
+      <!-- bounding_box views[4];  (x,y,w,h) for each view index 0..3 -->
+      <field type="uint16_t[4]" name="views_x">
+        X coordinate (top-left) of each user-controlled camera view in pixels.
+      </field>
+      <field type="uint16_t[4]" name="views_y">
+        Y coordinate (top-left) of each user-controlled camera view in pixels.
+      </field>
+      <field type="uint16_t[4]" name="views_w">
+        Width in pixels of each user-controlled camera view.
+      </field>
+      <field type="uint16_t[4]" name="views_h">
+        Height in pixels of each user-controlled camera view.
+      </field>
+
+      <!-- bounding_box detection_overlay_box; -->
+      <field type="uint16_t" name="detection_overlay_x">
+        X coordinate (top-left) of the entire detection overlay area in pixels.
+      </field>
+      <field type="uint16_t" name="detection_overlay_y">
+        Y coordinate (top-left) of the entire detection overlay area in pixels.
+      </field>
+      <field type="uint16_t" name="detection_overlay_w">
+        Width in pixels of the entire detection overlay area.
+      </field>
+      <field type="uint16_t" name="detection_overlay_h">
+        Height in pixels of the entire detection overlay area.
+      </field>
+
+      <field type="uint16_t" name="single_detection_size">
+        Side length in pixels of a single detection camera (detections are square tiles).
+      </field>
+    </message>
+
+    <!-- PARAM_TYPE = CAPTURE (4) -->
+    <message id="40004" name="CAPTURE_PARAMETERS">
+      <description>
+        Capture-related parameters and counters for DigiView, controlling single-image capture and video recording.
+        Exact behavior may depend on current implementation; historically capture has been marked as not fully implemented.
+      </description>
+
+      <field type="uint8_t"  name="cap_single_image">
+        Non-zero to request/indicate a single still image capture.
+      </field>
+      <field type="uint8_t"  name="record_video">
+        Non-zero to request/indicate video recording.
+      </field>
+      <field type="uint16_t" name="images_captured">
+        Counter of still images captured by the system.
+      </field>
+      <field type="uint16_t" name="videos_captured">
+        Counter of videos captured by the system.
+      </field>
+    </message>
+
+    <!-- PARAM_TYPE = DETECTION (5) -->
+    <message id="40005" name="DETECTION_PARAMETERS">
+      <description>
+        Detection message controlling AI post-processing: thresholds, box limits, overlap constraints, and scoring scales for detected objects.
+        Used to tune how detections are created, tracked, and pruned.
+      </description>
+
+      <field type="uint8_t"  name="mode">
+        Detection mode. Currently unused and ignored by the system.
+      </field>
+      <field type="uint8_t"  name="sorting_mode">
+        Sorting of detection cameras: 0=by score (desc), 1=by age (desc), 2=by score but keep camera assignment for the lifetime of the object.
+      </field>
+      <field type="float"    name="crop_confidence_threshold">
+        Confidence threshold for considering detections while tracking existing objects; range [0.0,0.99).
+      </field>
+      <field type="float"    name="var_confidence_threshold">
+        Confidence threshold for considering detections while scanning for new objects; range [0.0,0.99).
+      </field>
+      <field type="uint16_t" name="crop_box_limit">
+        Deprecated maximum number of crop boxes; typically kept for backwards compatibility.
+      </field>
+      <field type="uint16_t" name="var_box_limit">
+        Deprecated maximum number of VAR boxes; typically kept for backwards compatibility.
+      </field>
+      <field type="float"    name="crop_box_overlap">
+        Maximum allowed overlap between detection boxes when tracking; range [0.0,0.99).
+      </field>
+      <field type="float"    name="var_box_overlap">
+        Maximum allowed overlap between detection boxes when scanning for new objects; range [0.0,0.99).
+      </field>
+      <field type="uint8_t"  name="creation_score_scale">
+        Scale / initial score for newly created objects. If set to 255, the previous value is kept.
+      </field>
+      <field type="uint8_t"  name="bonus_detection_scale">
+        Score bonus when an object is found again during scanning. If set to 255, the previous value is kept.
+      </field>
+      <field type="uint8_t"  name="bonus_redetection_scale">
+        Score bonus when an object is found again during tracking. If set to 255, the previous value is kept.
+      </field>
+      <field type="uint8_t"  name="missed_detection_penalty">
+        Score penalty when an object is not found during scanning (despite being expected). If set to 255, the previous value is kept.
+      </field>
+      <field type="uint8_t"  name="missed_redetection_penalty">
+        Score penalty when an object is not found during tracking. If set to 255, the previous value is kept.
+      </field>
+    </message>
+
+    <!-- PARAM_TYPE = DETECTED_ROI (6) -->
+    <message id="40006" name="DETECTED_ROI_PARAMETERS">
+      <description>
+        Information about a single detected region-of-interest (ROI). Used with different index values to request one, visible, or all detections.
+        Some georeferencing fields may be unimplemented and return 0 / undefined.
+      </description>
+
+      <field type="uint8_t" name="index">
+        Requested detection index. Special values: 254=all detections currently visible in overlay, 255=all currently known detections.
+      </field>
+      <field type="uint8_t" name="score">
+        Score assigned to the detected object (0–255).
+      </field>
+      <field type="uint8_t" name="total_detections">
+        Total number of detections for which information has been sent in this response series.
+      </field>
+      <field type="float"   name="yaw_abs">
+        Absolute yaw angle (radians, Tait-Bryan) relative to true north.
+      </field>
+      <field type="float"   name="pitch_abs">
+        Absolute pitch angle (radians, Tait-Bryan) relative to true north.
+      </field>
+      <field type="float"   name="yaw_rel">
+        Yaw angle (radians) relative to the camera's center axis.
+      </field>
+      <field type="float"   name="pitch_rel">
+        Pitch angle (radians) relative to the camera's center axis.
+      </field>
+      <field type="float"   name="latitude">
+        Estimated object latitude in degrees, range [-90.0,90.0]. Currently often unimplemented and returns 0.
+      </field>
+      <field type="float"   name="longitude">
+        Estimated object longitude in degrees, range [-180.0,180.0). Currently often unimplemented and returns 0.
+      </field>
+      <field type="float"   name="altitude">
+        Estimated object altitude in meters above sea level. Currently often unimplemented and returns 0.
+      </field>
+      <field type="float"   name="distance">
+        Estimated distance from the camera/drone to the object in meters. Currently often unimplemented and returns 0.
+      </field>
+    </message>
+
+    <!-- PARAM_TYPE = LENS (7) -->
+    <message id="40007" name="LENS_PARAMETERS">
+      <description>
+        Lens selection for undistortion calculations.
+      </description>
+
+      <field type="uint8_t" name="lens_id">
+        Lens identifier to select which calibration / lens parameters to use.
+      </field>
+    </message>
+
+    <!-- PARAM_TYPE = CAM_EULER (8) -->
+    <message id="40008" name="CAM_EULER_PARAMETERS">
+      <description>
+        User-controlled camera orientation in Euler angles (Tait-Bryan) relative to true north.
+        Can be interpreted either as absolute angles or deltas depending on is_delta.
+      </description>
+
+      <field type="uint8_t" name="cam_id">
+        Camera identifier (user-controlled camera index).
+      </field>
+      <field type="uint8_t" name="is_delta">
+        0 = angles are absolute directions; non-zero = angles are deltas applied to current aim (recommended: 1 for true).
+      </field>
+      <field type="float"   name="yaw">
+        Camera yaw angle in radians.
+      </field>
+      <field type="float"   name="pitch">
+        Camera pitch angle in radians.
+      </field>
+      <field type="float"   name="roll">
+        Camera roll angle in radians. Currently often ignored.
+      </field>
+    </message>
+
+    <!-- PARAM_TYPE = CAM_ZOOM (9) -->
+    <message id="40009" name="CAM_ZOOM_PARAMETERS">
+      <description>
+        Digital zoom control by modifying the effective field of view of a user-controlled camera.
+      </description>
+
+      <field type="uint8_t" name="cam_id">
+        Camera identifier (user-controlled camera index).
+      </field>
+      <field type="int8_t"  name="zoom">
+        Unitless zoom value: positive zooms in, negative zooms out. On GET this value may be undefined; use CAM_FOV to query effective zoom.
+      </field>
+    </message>
+
+    <!-- PARAM_TYPE = CAM_LOCK_FLAGS (10) -->
+    <message id="40010" name="CAM_LOCK_FLAGS_PARAMETERS">
+      <description>
+        Lock settings for user-controlled cameras, specifying which axes (roll, pitch, yaw) are locked to the world versus following the platform.
+      </description>
+
+      <field type="uint8_t" name="cam_id">
+        Camera identifier (user-controlled camera index).
+      </field>
+      <field type="uint8_t" name="flags">
+        Bitmask for locked directions: bit0=roll, bit1=pitch, bit2=yaw (1 = locked, 0 = follows system). Higher bits are ignored.
+      </field>
+    </message>
+
+    <!-- PARAM_TYPE = CAM_CONTROL_MODE (11) -->
+    <message id="40011" name="CAM_CONTROL_MODE_PARAMETERS">
+      <description>
+        Control mode for the software gimbal of a user-controlled camera (e.g. directional vs coord-based control).
+      </description>
+
+      <field type="uint8_t" name="cam_id">
+        Camera identifier (user-controlled camera index).
+      </field>
+      <field type="uint8_t" name="mode">
+        Control mode: 0=Pilot view (not yet implemented), 1=Directional control, 2=Coordial control, 3=Pass-through.
+      </field>
+    </message>
+
+    <!-- PARAM_TYPE = CAM_CROP_MODE (12) -->
+    <message id="40012" name="CAM_CROP_MODE_PARAMETERS">
+      <description>
+        Crop mode for a user-controlled camera: square, panoramic, debug/full-frame, etc.
+      </description>
+
+      <field type="uint8_t" name="cam_id">
+        Camera identifier (user-controlled camera index).
+      </field>
+      <field type="uint8_t" name="mode">
+        Cropping mode: 0=deprecated rectangular crop, 1=cartesian sector (square output), 2=panoramic view, 3=deprecated undistort crop, 4=debug full 4K image downscaled.
+      </field>
+    </message>
+
+    <!-- PARAM_TYPE = CAM_OFFSET (13) -->
+    <message id="40013" name="CAM_OFFSET_PARAMETERS">
+      <description>
+        Utility for mapping a normalized frame coordinate in a user-controlled camera to Euler angles. 
+        The set form can be used to steer the camera to a pixel offset; the get form returns both absolute and camera-relative angles for the requested pixel.
+      </description>
+
+      <field type="uint8_t" name="cam_id">
+        Camera identifier (user-controlled camera index).
+      </field>
+      <field type="float"   name="x">
+        Normalized horizontal coordinate in the camera frame: -1 = left edge, 0 = center, 1 = right edge.
+      </field>
+      <field type="float"   name="y">
+        Normalized vertical coordinate in the camera frame: -1 = top edge, 0 = center, 1 = bottom edge.
+      </field>
+      <field type="float"   name="yaw_abs">
+        Absolute yaw angle (radians, Tait-Bryan) of this pixel direction in the global coordinate system.
+      </field>
+      <field type="float"   name="pitch_abs">
+        Absolute pitch angle (radians, Tait-Bryan) of this pixel direction in the global coordinate system.
+      </field>
+      <field type="float"   name="yaw_rel">
+        Yaw angle (radians) of this pixel direction relative to the camera's center axis.
+      </field>
+      <field type="float"   name="pitch_rel">
+        Pitch angle (radians) of this pixel direction relative to the camera's center axis.
+      </field>
+    </message>
+
+    <!-- PARAM_TYPE = CAM_FOV (14) -->
+    <message id="40014" name="CAM_FOV_PARAMETERS">
+      <description>
+        Field-of-view configuration for user-controlled cameras. Changing the FOV effectively changes the zoom level.
+      </description>
+
+      <field type="uint8_t" name="cam_id">
+        Camera identifier (user-controlled camera index).
+      </field>
+      <field type="float"   name="fov">
+        Horizontal field-of-view in radians. Vertical FOV is derived to maintain the camera's aspect ratio.
+      </field>
+    </message>
+
+    <!-- PARAM_TYPE = CAM_TARGET (15) -->
+    <message id="40015" name="CAM_TARGET_PARAMETERS">
+      <description>
+        GPS targeting message. Can be used either with normalized frame coordinates (x,y) or with latitude/longitude/altitude.
+        On SET, either x/y or t_latitude/t_longitude/t_altitude are used to define the target; on GET, returns the targeted coordinates for the given pixel or current target.
+      </description>
+
+      <field type="uint8_t" name="cam_id">
+        Camera identifier (user-controlled camera index).
+      </field>
+      <field type="float"   name="x">
+        Normalized horizontal coordinate in the camera frame: -1 = left, 0 = center, 1 = right. Used to select a target pixel.
+      </field>
+      <field type="float"   name="y">
+        Normalized vertical coordinate in the camera frame: -1 = top, 0 = center, 1 = bottom. Used to select a target pixel.
+      </field>
+      <field type="float"   name="t_latitude">
+        Target latitude in degrees. When both x and y are 0, interpreted as the camera's locked target latitude.
+      </field>
+      <field type="float"   name="t_longitude">
+        Target longitude in degrees. When both x and y are 0, interpreted as the camera's locked target longitude.
+      </field>
+      <field type="float"   name="t_altitude">
+        Target altitude in meters. When both x and y are 0, interpreted as the camera's locked target altitude.
+      </field>
+    </message>
+
+    <!-- PARAM_TYPE = CAM_SENSOR (16) -->
+    <message id="40016" name="CAM_SENSOR_PARAMETERS">
+      <description>
+        Camera sensor configuration: automatic exposure and gain ranges plus target brightness.
+        Manually fixing a value is done by setting the corresponding min and max to the same value.
+      </description>
+
+      <field type="uint32_t" name="min_exposure">
+        Minimum exposure value used by the automatic exposure controller (typically (1,40000]).
+      </field>
+      <field type="uint32_t" name="max_exposure">
+        Maximum exposure value used by the automatic exposure controller (typically (1,40000]).
+      </field>
+      <field type="uint32_t" name="min_gain">
+        Minimum gain value used by the automatic gain controller (typically (1000,51000]).
+      </field>
+      <field type="uint32_t" name="max_gain">
+        Maximum gain value used by the automatic gain controller (typically (1000,51000]).
+      </field>
+      <field type="float"    name="target_brightness">
+        Target scene brightness for the automatic exposure system, typically in range (-12,12].
+      </field>
+    </message>
+
+    <!-- PARAM_TYPE = CAM_DEPTH_ESTIMATION (17) -->
+    <message id="40017" name="CAM_DEPTH_ESTIMATION_PARAMETERS">
+      <description>
+        Depth estimation configuration for user-controlled cameras. Mode selection is currently to be implemented; GET may provide an estimated depth at the camera center.
+      </description>
+
+      <field type="uint8_t" name="cam_id">
+        Camera identifier (user-controlled camera index).
+      </field>
+      <field type="uint8_t" name="depth_estimation_mode">
+        Depth estimation mode selector (implementation-specific; typically [0,1]).
+      </field>
+      <field type="float"   name="depth">
+        Estimated depth in meters for the center point of the camera. Ignored on SET; populated on GET when implemented.
+      </field>
+    </message>
+
+  </messages>
+</mavlink>
