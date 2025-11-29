@@ -11,47 +11,45 @@
     <enum name="SV_LAYOUT_MODE">
       <description>Layout mode; </description>
       <entry value="0"  name="SV_LAYOUT_SINGLE"/>
-      <entry value="16" name="SV_LAYOUT_2VIEWS"/>
-      <entry value="32" name="SV_LAYOUT_3VIEWS"/>
-      <entry value="48" name="SV_LAYOUT_4VIEWS"/>
+      <entry value="1" name="SV_LAYOUT_2_STACKED"/>
+      <entry value="2" name="SV_LAYOUT_2_SIDE_BY_SIDE"/>
+      <entry value="3" name="SV_LAYOUT_2_SIDE_BY_SIDE_1_STACKED"/>
+      <entry value="4" name="SV_LAYOUT_4"/>
+      <entry value="5" name="SV_LAYOUT_3_SIDE_BY_SIDE_1_STACKED"/>
     </enum>
 
     <enum name="SV_DETECTION_OVERLAY_MODE">
       <entry value="0" name="SV_DET_OVERLAY_NONE"/>
-      <entry value="1" name="SV_DET_OVERLAY_BOXES"/>
-      <entry value="2" name="SV_DET_OVERLAY_HEATMAP"/>
+      <entry value="1" name="SV_DET_OVERLAY_SINGLE_TOP_RIGHT"/>
+      <entry value="2" name="SV_DET_OVERLAY_COLUMN_RIGHT"/>
+      <entry value="3" name="SV_DET_OVERLAY_COLUMN_LEFT"/>
+      <entry value="4" name="SV_DET_OVERLAY_ROW_TOP"/>
+      <entry value="5" name="SV_DET_OVERLAY_ROW_BOTTOM"/>
     </enum>
 
     <enum name="SV_DETECTION_MODE">
-      <entry value="0" name="SV_DET_OFF"/>
-      <entry value="1" name="SV_DET_CROP"/>
-      <entry value="2" name="SV_DET_VAR"/>
-      <entry value="3" name="SV_DET_CROP_AND_VAR"/>
+      <entry value="0" name="SV_DET_MODE_STANDARD"/>
     </enum>
 
     <enum name="SV_SORTING_MODE">
-      <entry value="0" name="SV_SORT_NONE"/>
-      <entry value="1" name="SV_SORT_SCORE"/>
-      <entry value="2" name="SV_SORT_DISTANCE"/>
+      <entry value="0" name="SV_SORT_STANDARD"/>
     </enum>
 
     <enum name="SV_TARGETING_MODE">
-      <entry value="0" name="SV_TGT_OFF"/>
-      <entry value="1" name="SV_TGT_MANUAL"/>
-      <entry value="2" name="SV_TGT_ROI"/>
-      <entry value="3" name="SV_TGT_GPS"/>
+      <entry value="0" name="SV_TRG_DIRECTIONAL"/>
+      <entry value="1" name="SV_TRG_COORDINAL"/>
+      <entry value="2" name="SV_TRG_DETECTION"/>
+      <entry value="3" name="SV_TRG_SINGLE_TARGET_TRACKING"/>
     </enum>
 
     <enum name="SV_CROP_MODE">
-      <entry value="0" name="SV_CROP_OFF"/>
-      <entry value="1" name="SV_CROP_CENTER"/>
-      <entry value="2" name="SV_CROP_ROI"/>
+      <entry value="0" name="SV_CROP_NONE"/>
+      <entry value="1" name="SV_CROP_CARTESIAN"/>
+      <entry value="2" name="SV_CROP_PANORAMA"/>
     </enum>
 
     <enum name="SV_DEPTH_ESTIMATION_MODE">
       <entry value="0" name="SV_DEPTH_OFF"/>
-      <entry value="1" name="SV_DEPTH_FIXED"/>
-      <entry value="2" name="SV_DEPTH_STEREO"/>
     </enum>
   </enums>
 
