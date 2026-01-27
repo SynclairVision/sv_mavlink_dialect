@@ -424,7 +424,7 @@ static void mavlink_test_detected_roi_parameters(uint8_t system_id, uint8_t comp
         uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
         uint16_t i;
     mavlink_detected_roi_parameters_t packet_in = {
-        17.0,45.0,73.0,101.0,129.0,157.0,185.0,213.0,101,168,235
+        17.0,45.0,73.0,101.0,129.0,157.0,185.0,213.0,101,168,235,46
     };
     mavlink_detected_roi_parameters_t packet1, packet2;
         memset(&packet1, 0, sizeof(packet1));
@@ -439,6 +439,7 @@ static void mavlink_test_detected_roi_parameters(uint8_t system_id, uint8_t comp
         packet1.index = packet_in.index;
         packet1.score = packet_in.score;
         packet1.total_detections = packet_in.total_detections;
+        packet1.rel_frame_of_reference = packet_in.rel_frame_of_reference;
         
         
 #ifdef MAVLINK_STATUS_FLAG_OUT_MAVLINK1
@@ -453,12 +454,12 @@ static void mavlink_test_detected_roi_parameters(uint8_t system_id, uint8_t comp
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
         memset(&packet2, 0, sizeof(packet2));
-    mavlink_msg_detected_roi_parameters_pack(system_id, component_id, &msg , packet1.index , packet1.score , packet1.total_detections , packet1.yaw_abs , packet1.pitch_abs , packet1.yaw_rel , packet1.pitch_rel , packet1.latitude , packet1.longitude , packet1.altitude , packet1.distance );
+    mavlink_msg_detected_roi_parameters_pack(system_id, component_id, &msg , packet1.index , packet1.score , packet1.total_detections , packet1.yaw_abs , packet1.pitch_abs , packet1.rel_frame_of_reference , packet1.yaw_rel , packet1.pitch_rel , packet1.latitude , packet1.longitude , packet1.altitude , packet1.distance );
     mavlink_msg_detected_roi_parameters_decode(&msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
         memset(&packet2, 0, sizeof(packet2));
-    mavlink_msg_detected_roi_parameters_pack_chan(system_id, component_id, MAVLINK_COMM_0, &msg , packet1.index , packet1.score , packet1.total_detections , packet1.yaw_abs , packet1.pitch_abs , packet1.yaw_rel , packet1.pitch_rel , packet1.latitude , packet1.longitude , packet1.altitude , packet1.distance );
+    mavlink_msg_detected_roi_parameters_pack_chan(system_id, component_id, MAVLINK_COMM_0, &msg , packet1.index , packet1.score , packet1.total_detections , packet1.yaw_abs , packet1.pitch_abs , packet1.rel_frame_of_reference , packet1.yaw_rel , packet1.pitch_rel , packet1.latitude , packet1.longitude , packet1.altitude , packet1.distance );
     mavlink_msg_detected_roi_parameters_decode(&msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
@@ -471,7 +472,7 @@ static void mavlink_test_detected_roi_parameters(uint8_t system_id, uint8_t comp
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
         
         memset(&packet2, 0, sizeof(packet2));
-    mavlink_msg_detected_roi_parameters_send(MAVLINK_COMM_1 , packet1.index , packet1.score , packet1.total_detections , packet1.yaw_abs , packet1.pitch_abs , packet1.yaw_rel , packet1.pitch_rel , packet1.latitude , packet1.longitude , packet1.altitude , packet1.distance );
+    mavlink_msg_detected_roi_parameters_send(MAVLINK_COMM_1 , packet1.index , packet1.score , packet1.total_detections , packet1.yaw_abs , packet1.pitch_abs , packet1.rel_frame_of_reference , packet1.yaw_rel , packet1.pitch_rel , packet1.latitude , packet1.longitude , packet1.altitude , packet1.distance );
     mavlink_msg_detected_roi_parameters_decode(last_msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 

@@ -10,7 +10,7 @@
     #error Wrong include order: MAVLINK_MINIMAL.H MUST NOT BE DIRECTLY USED. Include mavlink.h from the same directory instead or set ALL AND EVERY defines from MAVLINK.H manually accordingly, including the #define MAVLINK_H call.
 #endif
 
-#define MAVLINK_MINIMAL_XML_HASH 167010895615414769
+#define MAVLINK_MINIMAL_XML_HASH 4395585919162281310
 
 #ifdef __cplusplus
 extern "C" {
@@ -23,7 +23,7 @@ extern "C" {
 #endif
 
 #ifndef MAVLINK_MESSAGE_CRCS
-#define MAVLINK_MESSAGE_CRCS {{0, 50, 9, 9, 0, 0, 0}, {300, 217, 22, 22, 0, 0, 0}}
+#define MAVLINK_MESSAGE_CRCS {{0, 50, 9, 9, 0, 0, 0}}
 #endif
 
 #include "../protocol.h"
@@ -112,11 +112,13 @@ typedef enum MAV_TYPE
    MAV_TYPE_GPS=41, /* GPS | */
    MAV_TYPE_WINCH=42, /* Winch | */
    MAV_TYPE_GENERIC_MULTIROTOR=43, /* Generic multirotor that does not fit into a specific type or whose type is unknown | */
-   MAV_TYPE_ILLUMINATOR=44, /* Illuminator. An illuminator is a light source that is used for lighting up dark areas external to the sytstem: e.g. a torch or searchlight (as opposed to a light source for illuminating the system itself, e.g. an indicator light). | */
+   MAV_TYPE_ILLUMINATOR=44, /* Illuminator. An illuminator is a light source that is used for lighting up dark areas external to the system: e.g. a torch or searchlight (as opposed to a light source for illuminating the system itself, e.g. an indicator light). | */
    MAV_TYPE_SPACECRAFT_ORBITER=45, /* Orbiter spacecraft. Includes satellites orbiting terrestrial and extra-terrestrial bodies. Follows NASA Spacecraft Classification. | */
    MAV_TYPE_GROUND_QUADRUPED=46, /* A generic four-legged ground vehicle (e.g., a robot dog). | */
    MAV_TYPE_VTOL_GYRODYNE=47, /* VTOL hybrid of helicopter and autogyro. It has a main rotor for lift and separate propellers for forward flight. The rotor must be powered for hover but can autorotate in cruise flight. See: https://en.wikipedia.org/wiki/Gyrodyne | */
-   MAV_TYPE_ENUM_END=48, /*  | */
+   MAV_TYPE_GRIPPER=48, /* Gripper | */
+   MAV_TYPE_RADIO=49, /* Radio | */
+   MAV_TYPE_ENUM_END=50, /*  | */
 } MAV_TYPE;
 #endif
 
@@ -271,6 +273,9 @@ typedef enum MAV_COMPONENT
    MAV_COMP_ID_CAMERA4=103, /* Camera #4. | */
    MAV_COMP_ID_CAMERA5=104, /* Camera #5. | */
    MAV_COMP_ID_CAMERA6=105, /* Camera #6. | */
+   MAV_COMP_ID_RADIO=110, /* Radio #1. | */
+   MAV_COMP_ID_RADIO2=111, /* Radio #2. | */
+   MAV_COMP_ID_RADIO3=112, /* Radio #3. | */
    MAV_COMP_ID_SERVO1=140, /* Servo #1. | */
    MAV_COMP_ID_SERVO2=141, /* Servo #2. | */
    MAV_COMP_ID_SERVO3=142, /* Servo #3. | */
@@ -341,15 +346,14 @@ typedef enum MAV_COMPONENT
 
 // MESSAGE DEFINITIONS
 #include "./mavlink_msg_heartbeat.h"
-#include "./mavlink_msg_protocol_version.h"
 
 // base include
 
 
 
 #if MAVLINK_MINIMAL_XML_HASH == MAVLINK_PRIMARY_XML_HASH
-# define MAVLINK_MESSAGE_INFO {MAVLINK_MESSAGE_INFO_HEARTBEAT, MAVLINK_MESSAGE_INFO_PROTOCOL_VERSION}
-# define MAVLINK_MESSAGE_NAMES {{ "HEARTBEAT", 0 }, { "PROTOCOL_VERSION", 300 }}
+# define MAVLINK_MESSAGE_INFO {MAVLINK_MESSAGE_INFO_HEARTBEAT}
+# define MAVLINK_MESSAGE_NAMES {{ "HEARTBEAT", 0 }}
 # if MAVLINK_COMMAND_24BIT
 #  include "../mavlink_get_info.h"
 # endif

@@ -10,7 +10,7 @@
     #error Wrong include order: MAVLINK_SV_MSG_DEFS.H MUST NOT BE DIRECTLY USED. Include mavlink.h from the same directory instead or set ALL AND EVERY defines from MAVLINK.H manually accordingly, including the #define MAVLINK_H call.
 #endif
 
-#define MAVLINK_SV_MSG_DEFS_XML_HASH -1396237472228141397
+#define MAVLINK_SV_MSG_DEFS_XML_HASH 4662015631266616051
 
 #ifdef __cplusplus
 extern "C" {
@@ -23,7 +23,7 @@ extern "C" {
 #endif
 
 #ifndef MAVLINK_MESSAGE_CRCS
-#define MAVLINK_MESSAGE_CRCS {{40000, 174, 6, 6, 0, 0, 0}, {40001, 48, 33, 33, 0, 0, 0}, {40002, 109, 16, 16, 0, 0, 0}, {40003, 161, 58, 58, 0, 0, 0}, {40004, 174, 14, 14, 0, 0, 0}, {40005, 192, 23, 23, 0, 0, 0}, {40006, 38, 35, 35, 0, 0, 0}, {40007, 85, 44, 44, 0, 0, 0}, {40008, 66, 15, 15, 0, 0, 0}, {40009, 226, 33, 33, 0, 0, 0}, {40010, 225, 20, 20, 0, 0, 0}, {40011, 180, 14, 14, 0, 0, 0}, {40012, 70, 42, 42, 0, 0, 0}}
+#define MAVLINK_MESSAGE_CRCS {{40000, 174, 6, 6, 0, 0, 0}, {40001, 48, 33, 33, 0, 0, 0}, {40002, 109, 16, 16, 0, 0, 0}, {40003, 161, 58, 58, 0, 0, 0}, {40004, 174, 14, 14, 0, 0, 0}, {40005, 192, 23, 23, 0, 0, 0}, {40006, 224, 36, 36, 0, 0, 0}, {40007, 85, 44, 44, 0, 0, 0}, {40008, 66, 15, 15, 0, 0, 0}, {40009, 226, 33, 33, 0, 0, 0}, {40010, 225, 20, 20, 0, 0, 0}, {40011, 180, 14, 14, 0, 0, 0}, {40012, 70, 42, 42, 0, 0, 0}}
 #endif
 
 #include "../protocol.h"

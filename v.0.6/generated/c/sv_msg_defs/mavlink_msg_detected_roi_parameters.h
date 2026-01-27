@@ -16,15 +16,16 @@ typedef struct __mavlink_detected_roi_parameters_t {
  uint8_t index; /*<  Requested or returned detection index (254/255 are special values).*/
  uint8_t score; /*<  Detection score.*/
  uint8_t total_detections; /*<  Number of detections returned across messages.*/
+ uint8_t rel_frame_of_reference; /*<  Indicates the frame of reference for the relative yaw and pitch angles.*/
 } mavlink_detected_roi_parameters_t;
 
-#define MAVLINK_MSG_ID_DETECTED_ROI_PARAMETERS_LEN 35
-#define MAVLINK_MSG_ID_DETECTED_ROI_PARAMETERS_MIN_LEN 35
-#define MAVLINK_MSG_ID_40006_LEN 35
-#define MAVLINK_MSG_ID_40006_MIN_LEN 35
+#define MAVLINK_MSG_ID_DETECTED_ROI_PARAMETERS_LEN 36
+#define MAVLINK_MSG_ID_DETECTED_ROI_PARAMETERS_MIN_LEN 36
+#define MAVLINK_MSG_ID_40006_LEN 36
+#define MAVLINK_MSG_ID_40006_MIN_LEN 36
 
-#define MAVLINK_MSG_ID_DETECTED_ROI_PARAMETERS_CRC 38
-#define MAVLINK_MSG_ID_40006_CRC 38
+#define MAVLINK_MSG_ID_DETECTED_ROI_PARAMETERS_CRC 224
+#define MAVLINK_MSG_ID_40006_CRC 224
 
 
 
@@ -32,12 +33,13 @@ typedef struct __mavlink_detected_roi_parameters_t {
 #define MAVLINK_MESSAGE_INFO_DETECTED_ROI_PARAMETERS { \
     40006, \
     "DETECTED_ROI_PARAMETERS", \
-    11, \
+    12, \
     {  { "index", NULL, MAVLINK_TYPE_UINT8_T, 0, 32, offsetof(mavlink_detected_roi_parameters_t, index) }, \
          { "score", NULL, MAVLINK_TYPE_UINT8_T, 0, 33, offsetof(mavlink_detected_roi_parameters_t, score) }, \
          { "total_detections", NULL, MAVLINK_TYPE_UINT8_T, 0, 34, offsetof(mavlink_detected_roi_parameters_t, total_detections) }, \
          { "yaw_abs", NULL, MAVLINK_TYPE_FLOAT, 0, 0, offsetof(mavlink_detected_roi_parameters_t, yaw_abs) }, \
          { "pitch_abs", NULL, MAVLINK_TYPE_FLOAT, 0, 4, offsetof(mavlink_detected_roi_parameters_t, pitch_abs) }, \
+         { "rel_frame_of_reference", NULL, MAVLINK_TYPE_UINT8_T, 0, 35, offsetof(mavlink_detected_roi_parameters_t, rel_frame_of_reference) }, \
          { "yaw_rel", NULL, MAVLINK_TYPE_FLOAT, 0, 8, offsetof(mavlink_detected_roi_parameters_t, yaw_rel) }, \
          { "pitch_rel", NULL, MAVLINK_TYPE_FLOAT, 0, 12, offsetof(mavlink_detected_roi_parameters_t, pitch_rel) }, \
          { "latitude", NULL, MAVLINK_TYPE_FLOAT, 0, 16, offsetof(mavlink_detected_roi_parameters_t, latitude) }, \
@@ -49,12 +51,13 @@ typedef struct __mavlink_detected_roi_parameters_t {
 #else
 #define MAVLINK_MESSAGE_INFO_DETECTED_ROI_PARAMETERS { \
     "DETECTED_ROI_PARAMETERS", \
-    11, \
+    12, \
     {  { "index", NULL, MAVLINK_TYPE_UINT8_T, 0, 32, offsetof(mavlink_detected_roi_parameters_t, index) }, \
          { "score", NULL, MAVLINK_TYPE_UINT8_T, 0, 33, offsetof(mavlink_detected_roi_parameters_t, score) }, \
          { "total_detections", NULL, MAVLINK_TYPE_UINT8_T, 0, 34, offsetof(mavlink_detected_roi_parameters_t, total_detections) }, \
          { "yaw_abs", NULL, MAVLINK_TYPE_FLOAT, 0, 0, offsetof(mavlink_detected_roi_parameters_t, yaw_abs) }, \
          { "pitch_abs", NULL, MAVLINK_TYPE_FLOAT, 0, 4, offsetof(mavlink_detected_roi_parameters_t, pitch_abs) }, \
+         { "rel_frame_of_reference", NULL, MAVLINK_TYPE_UINT8_T, 0, 35, offsetof(mavlink_detected_roi_parameters_t, rel_frame_of_reference) }, \
          { "yaw_rel", NULL, MAVLINK_TYPE_FLOAT, 0, 8, offsetof(mavlink_detected_roi_parameters_t, yaw_rel) }, \
          { "pitch_rel", NULL, MAVLINK_TYPE_FLOAT, 0, 12, offsetof(mavlink_detected_roi_parameters_t, pitch_rel) }, \
          { "latitude", NULL, MAVLINK_TYPE_FLOAT, 0, 16, offsetof(mavlink_detected_roi_parameters_t, latitude) }, \
@@ -76,6 +79,7 @@ typedef struct __mavlink_detected_roi_parameters_t {
  * @param total_detections  Number of detections returned across messages.
  * @param yaw_abs  Absolute yaw in radians (Tait-Bryan, vs true north).
  * @param pitch_abs  Absolute pitch in radians (vs true north).
+ * @param rel_frame_of_reference  Indicates the frame of reference for the relative yaw and pitch angles.
  * @param yaw_rel  Relative yaw in radians (vs camera center axis).
  * @param pitch_rel  Relative pitch in radians (vs camera center axis).
  * @param latitude  Detection latitude, currently 0 if not implemented.
@@ -85,7 +89,7 @@ typedef struct __mavlink_detected_roi_parameters_t {
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_detected_roi_parameters_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
-                               uint8_t index, uint8_t score, uint8_t total_detections, float yaw_abs, float pitch_abs, float yaw_rel, float pitch_rel, float latitude, float longitude, float altitude, float distance)
+                               uint8_t index, uint8_t score, uint8_t total_detections, float yaw_abs, float pitch_abs, uint8_t rel_frame_of_reference, float yaw_rel, float pitch_rel, float latitude, float longitude, float altitude, float distance)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_DETECTED_ROI_PARAMETERS_LEN];
@@ -100,6 +104,7 @@ static inline uint16_t mavlink_msg_detected_roi_parameters_pack(uint8_t system_i
     _mav_put_uint8_t(buf, 32, index);
     _mav_put_uint8_t(buf, 33, score);
     _mav_put_uint8_t(buf, 34, total_detections);
+    _mav_put_uint8_t(buf, 35, rel_frame_of_reference);
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_DETECTED_ROI_PARAMETERS_LEN);
 #else
@@ -115,6 +120,7 @@ static inline uint16_t mavlink_msg_detected_roi_parameters_pack(uint8_t system_i
     packet.index = index;
     packet.score = score;
     packet.total_detections = total_detections;
+    packet.rel_frame_of_reference = rel_frame_of_reference;
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_DETECTED_ROI_PARAMETERS_LEN);
 #endif
@@ -135,6 +141,7 @@ static inline uint16_t mavlink_msg_detected_roi_parameters_pack(uint8_t system_i
  * @param total_detections  Number of detections returned across messages.
  * @param yaw_abs  Absolute yaw in radians (Tait-Bryan, vs true north).
  * @param pitch_abs  Absolute pitch in radians (vs true north).
+ * @param rel_frame_of_reference  Indicates the frame of reference for the relative yaw and pitch angles.
  * @param yaw_rel  Relative yaw in radians (vs camera center axis).
  * @param pitch_rel  Relative pitch in radians (vs camera center axis).
  * @param latitude  Detection latitude, currently 0 if not implemented.
@@ -144,7 +151,7 @@ static inline uint16_t mavlink_msg_detected_roi_parameters_pack(uint8_t system_i
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_detected_roi_parameters_pack_status(uint8_t system_id, uint8_t component_id, mavlink_status_t *_status, mavlink_message_t* msg,
-                               uint8_t index, uint8_t score, uint8_t total_detections, float yaw_abs, float pitch_abs, float yaw_rel, float pitch_rel, float latitude, float longitude, float altitude, float distance)
+                               uint8_t index, uint8_t score, uint8_t total_detections, float yaw_abs, float pitch_abs, uint8_t rel_frame_of_reference, float yaw_rel, float pitch_rel, float latitude, float longitude, float altitude, float distance)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_DETECTED_ROI_PARAMETERS_LEN];
@@ -159,6 +166,7 @@ static inline uint16_t mavlink_msg_detected_roi_parameters_pack_status(uint8_t s
     _mav_put_uint8_t(buf, 32, index);
     _mav_put_uint8_t(buf, 33, score);
     _mav_put_uint8_t(buf, 34, total_detections);
+    _mav_put_uint8_t(buf, 35, rel_frame_of_reference);
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_DETECTED_ROI_PARAMETERS_LEN);
 #else
@@ -174,6 +182,7 @@ static inline uint16_t mavlink_msg_detected_roi_parameters_pack_status(uint8_t s
     packet.index = index;
     packet.score = score;
     packet.total_detections = total_detections;
+    packet.rel_frame_of_reference = rel_frame_of_reference;
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_DETECTED_ROI_PARAMETERS_LEN);
 #endif
@@ -197,6 +206,7 @@ static inline uint16_t mavlink_msg_detected_roi_parameters_pack_status(uint8_t s
  * @param total_detections  Number of detections returned across messages.
  * @param yaw_abs  Absolute yaw in radians (Tait-Bryan, vs true north).
  * @param pitch_abs  Absolute pitch in radians (vs true north).
+ * @param rel_frame_of_reference  Indicates the frame of reference for the relative yaw and pitch angles.
  * @param yaw_rel  Relative yaw in radians (vs camera center axis).
  * @param pitch_rel  Relative pitch in radians (vs camera center axis).
  * @param latitude  Detection latitude, currently 0 if not implemented.
@@ -207,7 +217,7 @@ static inline uint16_t mavlink_msg_detected_roi_parameters_pack_status(uint8_t s
  */
 static inline uint16_t mavlink_msg_detected_roi_parameters_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
                                mavlink_message_t* msg,
-                                   uint8_t index,uint8_t score,uint8_t total_detections,float yaw_abs,float pitch_abs,float yaw_rel,float pitch_rel,float latitude,float longitude,float altitude,float distance)
+                                   uint8_t index,uint8_t score,uint8_t total_detections,float yaw_abs,float pitch_abs,uint8_t rel_frame_of_reference,float yaw_rel,float pitch_rel,float latitude,float longitude,float altitude,float distance)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_DETECTED_ROI_PARAMETERS_LEN];
@@ -222,6 +232,7 @@ static inline uint16_t mavlink_msg_detected_roi_parameters_pack_chan(uint8_t sys
     _mav_put_uint8_t(buf, 32, index);
     _mav_put_uint8_t(buf, 33, score);
     _mav_put_uint8_t(buf, 34, total_detections);
+    _mav_put_uint8_t(buf, 35, rel_frame_of_reference);
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_DETECTED_ROI_PARAMETERS_LEN);
 #else
@@ -237,6 +248,7 @@ static inline uint16_t mavlink_msg_detected_roi_parameters_pack_chan(uint8_t sys
     packet.index = index;
     packet.score = score;
     packet.total_detections = total_detections;
+    packet.rel_frame_of_reference = rel_frame_of_reference;
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_DETECTED_ROI_PARAMETERS_LEN);
 #endif
@@ -255,7 +267,7 @@ static inline uint16_t mavlink_msg_detected_roi_parameters_pack_chan(uint8_t sys
  */
 static inline uint16_t mavlink_msg_detected_roi_parameters_encode(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, const mavlink_detected_roi_parameters_t* detected_roi_parameters)
 {
-    return mavlink_msg_detected_roi_parameters_pack(system_id, component_id, msg, detected_roi_parameters->index, detected_roi_parameters->score, detected_roi_parameters->total_detections, detected_roi_parameters->yaw_abs, detected_roi_parameters->pitch_abs, detected_roi_parameters->yaw_rel, detected_roi_parameters->pitch_rel, detected_roi_parameters->latitude, detected_roi_parameters->longitude, detected_roi_parameters->altitude, detected_roi_parameters->distance);
+    return mavlink_msg_detected_roi_parameters_pack(system_id, component_id, msg, detected_roi_parameters->index, detected_roi_parameters->score, detected_roi_parameters->total_detections, detected_roi_parameters->yaw_abs, detected_roi_parameters->pitch_abs, detected_roi_parameters->rel_frame_of_reference, detected_roi_parameters->yaw_rel, detected_roi_parameters->pitch_rel, detected_roi_parameters->latitude, detected_roi_parameters->longitude, detected_roi_parameters->altitude, detected_roi_parameters->distance);
 }
 
 /**
@@ -269,7 +281,7 @@ static inline uint16_t mavlink_msg_detected_roi_parameters_encode(uint8_t system
  */
 static inline uint16_t mavlink_msg_detected_roi_parameters_encode_chan(uint8_t system_id, uint8_t component_id, uint8_t chan, mavlink_message_t* msg, const mavlink_detected_roi_parameters_t* detected_roi_parameters)
 {
-    return mavlink_msg_detected_roi_parameters_pack_chan(system_id, component_id, chan, msg, detected_roi_parameters->index, detected_roi_parameters->score, detected_roi_parameters->total_detections, detected_roi_parameters->yaw_abs, detected_roi_parameters->pitch_abs, detected_roi_parameters->yaw_rel, detected_roi_parameters->pitch_rel, detected_roi_parameters->latitude, detected_roi_parameters->longitude, detected_roi_parameters->altitude, detected_roi_parameters->distance);
+    return mavlink_msg_detected_roi_parameters_pack_chan(system_id, component_id, chan, msg, detected_roi_parameters->index, detected_roi_parameters->score, detected_roi_parameters->total_detections, detected_roi_parameters->yaw_abs, detected_roi_parameters->pitch_abs, detected_roi_parameters->rel_frame_of_reference, detected_roi_parameters->yaw_rel, detected_roi_parameters->pitch_rel, detected_roi_parameters->latitude, detected_roi_parameters->longitude, detected_roi_parameters->altitude, detected_roi_parameters->distance);
 }
 
 /**
@@ -283,7 +295,7 @@ static inline uint16_t mavlink_msg_detected_roi_parameters_encode_chan(uint8_t s
  */
 static inline uint16_t mavlink_msg_detected_roi_parameters_encode_status(uint8_t system_id, uint8_t component_id, mavlink_status_t* _status, mavlink_message_t* msg, const mavlink_detected_roi_parameters_t* detected_roi_parameters)
 {
-    return mavlink_msg_detected_roi_parameters_pack_status(system_id, component_id, _status, msg,  detected_roi_parameters->index, detected_roi_parameters->score, detected_roi_parameters->total_detections, detected_roi_parameters->yaw_abs, detected_roi_parameters->pitch_abs, detected_roi_parameters->yaw_rel, detected_roi_parameters->pitch_rel, detected_roi_parameters->latitude, detected_roi_parameters->longitude, detected_roi_parameters->altitude, detected_roi_parameters->distance);
+    return mavlink_msg_detected_roi_parameters_pack_status(system_id, component_id, _status, msg,  detected_roi_parameters->index, detected_roi_parameters->score, detected_roi_parameters->total_detections, detected_roi_parameters->yaw_abs, detected_roi_parameters->pitch_abs, detected_roi_parameters->rel_frame_of_reference, detected_roi_parameters->yaw_rel, detected_roi_parameters->pitch_rel, detected_roi_parameters->latitude, detected_roi_parameters->longitude, detected_roi_parameters->altitude, detected_roi_parameters->distance);
 }
 
 /**
@@ -295,6 +307,7 @@ static inline uint16_t mavlink_msg_detected_roi_parameters_encode_status(uint8_t
  * @param total_detections  Number of detections returned across messages.
  * @param yaw_abs  Absolute yaw in radians (Tait-Bryan, vs true north).
  * @param pitch_abs  Absolute pitch in radians (vs true north).
+ * @param rel_frame_of_reference  Indicates the frame of reference for the relative yaw and pitch angles.
  * @param yaw_rel  Relative yaw in radians (vs camera center axis).
  * @param pitch_rel  Relative pitch in radians (vs camera center axis).
  * @param latitude  Detection latitude, currently 0 if not implemented.
@@ -304,7 +317,7 @@ static inline uint16_t mavlink_msg_detected_roi_parameters_encode_status(uint8_t
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
-static inline void mavlink_msg_detected_roi_parameters_send(mavlink_channel_t chan, uint8_t index, uint8_t score, uint8_t total_detections, float yaw_abs, float pitch_abs, float yaw_rel, float pitch_rel, float latitude, float longitude, float altitude, float distance)
+static inline void mavlink_msg_detected_roi_parameters_send(mavlink_channel_t chan, uint8_t index, uint8_t score, uint8_t total_detections, float yaw_abs, float pitch_abs, uint8_t rel_frame_of_reference, float yaw_rel, float pitch_rel, float latitude, float longitude, float altitude, float distance)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_DETECTED_ROI_PARAMETERS_LEN];
@@ -319,6 +332,7 @@ static inline void mavlink_msg_detected_roi_parameters_send(mavlink_channel_t ch
     _mav_put_uint8_t(buf, 32, index);
     _mav_put_uint8_t(buf, 33, score);
     _mav_put_uint8_t(buf, 34, total_detections);
+    _mav_put_uint8_t(buf, 35, rel_frame_of_reference);
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_DETECTED_ROI_PARAMETERS, buf, MAVLINK_MSG_ID_DETECTED_ROI_PARAMETERS_MIN_LEN, MAVLINK_MSG_ID_DETECTED_ROI_PARAMETERS_LEN, MAVLINK_MSG_ID_DETECTED_ROI_PARAMETERS_CRC);
 #else
@@ -334,6 +348,7 @@ static inline void mavlink_msg_detected_roi_parameters_send(mavlink_channel_t ch
     packet.index = index;
     packet.score = score;
     packet.total_detections = total_detections;
+    packet.rel_frame_of_reference = rel_frame_of_reference;
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_DETECTED_ROI_PARAMETERS, (const char *)&packet, MAVLINK_MSG_ID_DETECTED_ROI_PARAMETERS_MIN_LEN, MAVLINK_MSG_ID_DETECTED_ROI_PARAMETERS_LEN, MAVLINK_MSG_ID_DETECTED_ROI_PARAMETERS_CRC);
 #endif
@@ -347,7 +362,7 @@ static inline void mavlink_msg_detected_roi_parameters_send(mavlink_channel_t ch
 static inline void mavlink_msg_detected_roi_parameters_send_struct(mavlink_channel_t chan, const mavlink_detected_roi_parameters_t* detected_roi_parameters)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
-    mavlink_msg_detected_roi_parameters_send(chan, detected_roi_parameters->index, detected_roi_parameters->score, detected_roi_parameters->total_detections, detected_roi_parameters->yaw_abs, detected_roi_parameters->pitch_abs, detected_roi_parameters->yaw_rel, detected_roi_parameters->pitch_rel, detected_roi_parameters->latitude, detected_roi_parameters->longitude, detected_roi_parameters->altitude, detected_roi_parameters->distance);
+    mavlink_msg_detected_roi_parameters_send(chan, detected_roi_parameters->index, detected_roi_parameters->score, detected_roi_parameters->total_detections, detected_roi_parameters->yaw_abs, detected_roi_parameters->pitch_abs, detected_roi_parameters->rel_frame_of_reference, detected_roi_parameters->yaw_rel, detected_roi_parameters->pitch_rel, detected_roi_parameters->latitude, detected_roi_parameters->longitude, detected_roi_parameters->altitude, detected_roi_parameters->distance);
 #else
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_DETECTED_ROI_PARAMETERS, (const char *)detected_roi_parameters, MAVLINK_MSG_ID_DETECTED_ROI_PARAMETERS_MIN_LEN, MAVLINK_MSG_ID_DETECTED_ROI_PARAMETERS_LEN, MAVLINK_MSG_ID_DETECTED_ROI_PARAMETERS_CRC);
 #endif
@@ -355,13 +370,13 @@ static inline void mavlink_msg_detected_roi_parameters_send_struct(mavlink_chann
 
 #if MAVLINK_MSG_ID_DETECTED_ROI_PARAMETERS_LEN <= MAVLINK_MAX_PAYLOAD_LEN
 /*
-  This variant of _send() can be used to save stack space by re-using
+  This variant of _send() can be used to save stack space by reusing
   memory from the receive buffer.  The caller provides a
   mavlink_message_t which is the size of a full mavlink message. This
   is usually the receive buffer for the channel, and allows a reply to an
   incoming message with minimum stack space usage.
  */
-static inline void mavlink_msg_detected_roi_parameters_send_buf(mavlink_message_t *msgbuf, mavlink_channel_t chan,  uint8_t index, uint8_t score, uint8_t total_detections, float yaw_abs, float pitch_abs, float yaw_rel, float pitch_rel, float latitude, float longitude, float altitude, float distance)
+static inline void mavlink_msg_detected_roi_parameters_send_buf(mavlink_message_t *msgbuf, mavlink_channel_t chan,  uint8_t index, uint8_t score, uint8_t total_detections, float yaw_abs, float pitch_abs, uint8_t rel_frame_of_reference, float yaw_rel, float pitch_rel, float latitude, float longitude, float altitude, float distance)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char *buf = (char *)msgbuf;
@@ -376,6 +391,7 @@ static inline void mavlink_msg_detected_roi_parameters_send_buf(mavlink_message_
     _mav_put_uint8_t(buf, 32, index);
     _mav_put_uint8_t(buf, 33, score);
     _mav_put_uint8_t(buf, 34, total_detections);
+    _mav_put_uint8_t(buf, 35, rel_frame_of_reference);
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_DETECTED_ROI_PARAMETERS, buf, MAVLINK_MSG_ID_DETECTED_ROI_PARAMETERS_MIN_LEN, MAVLINK_MSG_ID_DETECTED_ROI_PARAMETERS_LEN, MAVLINK_MSG_ID_DETECTED_ROI_PARAMETERS_CRC);
 #else
@@ -391,6 +407,7 @@ static inline void mavlink_msg_detected_roi_parameters_send_buf(mavlink_message_
     packet->index = index;
     packet->score = score;
     packet->total_detections = total_detections;
+    packet->rel_frame_of_reference = rel_frame_of_reference;
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_DETECTED_ROI_PARAMETERS, (const char *)packet, MAVLINK_MSG_ID_DETECTED_ROI_PARAMETERS_MIN_LEN, MAVLINK_MSG_ID_DETECTED_ROI_PARAMETERS_LEN, MAVLINK_MSG_ID_DETECTED_ROI_PARAMETERS_CRC);
 #endif
@@ -450,6 +467,16 @@ static inline float mavlink_msg_detected_roi_parameters_get_yaw_abs(const mavlin
 static inline float mavlink_msg_detected_roi_parameters_get_pitch_abs(const mavlink_message_t* msg)
 {
     return _MAV_RETURN_float(msg,  4);
+}
+
+/**
+ * @brief Get field rel_frame_of_reference from detected_roi_parameters message
+ *
+ * @return  Indicates the frame of reference for the relative yaw and pitch angles.
+ */
+static inline uint8_t mavlink_msg_detected_roi_parameters_get_rel_frame_of_reference(const mavlink_message_t* msg)
+{
+    return _MAV_RETURN_uint8_t(msg,  35);
 }
 
 /**
@@ -532,6 +559,7 @@ static inline void mavlink_msg_detected_roi_parameters_decode(const mavlink_mess
     detected_roi_parameters->index = mavlink_msg_detected_roi_parameters_get_index(msg);
     detected_roi_parameters->score = mavlink_msg_detected_roi_parameters_get_score(msg);
     detected_roi_parameters->total_detections = mavlink_msg_detected_roi_parameters_get_total_detections(msg);
+    detected_roi_parameters->rel_frame_of_reference = mavlink_msg_detected_roi_parameters_get_rel_frame_of_reference(msg);
 #else
         uint8_t len = msg->len < MAVLINK_MSG_ID_DETECTED_ROI_PARAMETERS_LEN? msg->len : MAVLINK_MSG_ID_DETECTED_ROI_PARAMETERS_LEN;
         memset(detected_roi_parameters, 0, MAVLINK_MSG_ID_DETECTED_ROI_PARAMETERS_LEN);
