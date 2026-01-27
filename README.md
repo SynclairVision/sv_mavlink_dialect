@@ -7,10 +7,10 @@ SynclairVisions custom MAVLink dialect with generated C headers and a Python mod
 - `v.0.x/generated/python.py`: Python implementation.
 - `docs.md`: extra notes/background.
 
-Use the highest available version (currently `v.0.5`) unless you must match an older system.
+Use the highest available version (currently `v.0.6`) unless you must match an older system.
 
 ## C headers
-1. Copy `v.0.5/generated/c` into your project, or add it to your compiler include path.
+1. Copy `v.0.x/generated/c` into your project, or add it to your compiler include path.
 2. Include the main header:
    ```c
    #include "sv_msg_defs/mavlink.h"
@@ -25,7 +25,7 @@ Use the highest available version (currently `v.0.5`) unless you must match an o
 1. Ensure `qgroundcontrol/custom-example` is renamed to `qgroundcontrol/custom`.
 2. In `qgroundcontrol/custom/cmake/CustomOverrides.cmake`, point CPM to the generated C root:
    ```cmake
-   set(CPM_mavlink_SOURCE "/path/to/sv_mavlink_dialect/v.0.5/generated/c")
+   set(CPM_mavlink_SOURCE "/path/to/sv_mavlink_dialect/v.0.x/generated/c")
    ```
 3. Rebuild QGC with your usual toolchain, e.g.:
    ```sh
@@ -35,7 +35,7 @@ Use the highest available version (currently `v.0.5`) unless you must match an o
    ```
 
 ## Python module
-1. Copy `v.0.5/generated/python.py` into your project (you can rename it to `sv_mavlink.py`).
+1. Copy `v.0.x/generated/python.py` into your project (you can rename it to `sv_mavlink.py`).
 2. Make sure its directory is on `PYTHONPATH` (placing it next to your script works).
 3. Import and use:
    ```python
