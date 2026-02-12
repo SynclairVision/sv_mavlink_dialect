@@ -71,9 +71,9 @@ We generate sv_mavlink_dialect alongside all.xml to ensure that:
 Once you are in the mavlink repo. Enter the message_definitions/v1.0 directory. 
 Here you will see all the official messages that are maintained by the mavlink team.
 
-Add your sv_msg_defs.xml into the message_definitions/v1.0 directory.
+1. Add your sv_msg_defs.xml into the message_definitions/v1.0 directory.
 
-Edit the message_definitions/v1.0/all.xml by adding the sv_msg_defs.xml as an include:
+2. Edit the message_definitions/v1.0/all.xml by adding the sv_msg_defs.xml as an include:
 <include>sv_msg_defs.xml</include>
 
 Now the dialect is added to all.xml and will be generated together with all official messages. 
