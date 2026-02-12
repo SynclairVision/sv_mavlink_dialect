@@ -49,10 +49,9 @@ If you need to modify the message definitions or regenerate the code, you must u
 Prerequisite
 
 Install the MAVLink generator via pip:
-Bash
-
+```sh
 pip install pymavlink
-
+```
 Avoiding Message ID Clashes
 
 Crucial: When generating this dialect, it must be processed together with the standard mavlink/all.xml definitions.
