@@ -42,3 +42,46 @@ Use the highest available version (currently `v.0.6`) unless you must match an o
    import sv_mavlink as mav  # if you renamed the file
    print("Dialect:", mav.DIALECT, "Wire:", mav.WIRE_PROTOCOL_VERSION)
    ```
+
+# Generating Manually
+
+If you need to modify the message definitions or regenerate the code, you must use the mavgen tool included in pymavlink.
+Prerequisite
+
+Install the MAVLink generator via pip:
+Bash
+
+pip install pymavlink
+
+Avoiding Message ID Clashes
+
+Crucial: When generating this dialect, it must be processed together with the standard mavlink/all.xml definitions.
+
+We generate sv_mavlink_dialect alongside all.xml to ensure that:
+
+    All standard MAVLink enums and messages are available to the dialect.
+
+    There are no clashes between Message IDs. The generator validates that our custom SynclairVisions messages do not overlap or conflict with standard MAVLink message IDs.
+
+# Generation Commands
+
+To generate the dialect, run the following commands from the project root:
+
+For C Headers:
+```sh
+python3 -m pymavlink.tools.mavgen \
+    --lang=C \
+    --wire-protocol=2.0 \
+    --output=v.0.x/generated/c \
+    v.0.x/xml/sv_msg_defs.xml
+```
+
+For Python:
+```sh
+
+python3 -m pymavlink.tools.mavgen \
+    --lang=Python \
+    --wire-protocol=2.0 \
+    --output=v.0.x/generated/python.py \
+    v.0.x/xml/sv_msg_defs.xml
+```
