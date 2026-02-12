@@ -45,14 +45,18 @@ Use the highest available version (currently `v.0.6`) unless you must match an o
 
 # Generating Manually
 
-If you need to modify the message definitions or regenerate the code, you must use the mavgen tool included in pymavlink.
+If you need to modify the message definitions or regenerate the code, you must use the mavgen tool. The simplest way is to clone the mavlink repo and generate from there.
 Prerequisite
 
-Install the MAVLink generator via pip:
+Clone the mavlink repo
 ```sh
+# Clone mavlink into the directory of your choice
+git clone https://github.com/mavlink/mavlink.git --recursive
+cd mavlink
+
 python3 -m venv .venv
 source .venv/bin/activate
-pip install pymavlink
+python3 -m pip install -r pymavlink/requirements.txt
 ```
 Avoiding Message ID Clashes
 
@@ -63,25 +67,41 @@ We generate sv_mavlink_dialect alongside all.xml to ensure that:
  All standard MAVLink enums and messages are available to the dialect.
  There are no clashes between Message IDs. The generator validates that our custom SynclairVisions messages do not overlap or conflict with standard MAVLink message IDs.
 
+# Add the sv_msg_defs.xml
+Once you are in the mavlink repo. Enter the message_definitions/v1.0 directory. 
+Here you will see all the official messages that are maintained by the mavlink team.
+
+Add your sv_msg_defs.xml into the message_definitions/v1.0 directory.
+
+Edit the message_definitions/v1.0/all.xml by adding the sv_msg_defs.xml as an include:
+<include>sv_msg_defs.xml</include>
+
+Now the dialect is added to all.xml and will be generated together with all official messages. 
+This ensures that we dont have any message conflicts.
+
 # Generation Commands
 
-To generate the dialect, run the following commands from the project root:
+To generate the dialect, run the following commands from the mavlink root:
 
 For C Headers:
 ```sh
 python3 -m pymavlink.tools.mavgen \
     --lang=C \
     --wire-protocol=2.0 \
-    --output=v.0.x/generated/c \
-    v.0.x/xml/sv_msg_defs.xml
+    --output=path/to/where/you/want/the/output/to/be/generated \
+    message_definitions/v1.0/all.xml
 ```
-
 For Python:
 ```sh
 
 python3 -m pymavlink.tools.mavgen \
     --lang=Python \
     --wire-protocol=2.0 \
-    --output=v.0.x/generated/python.py \
-    v.0.x/xml/sv_msg_defs.xml
+    --output=path/to/where/you/want/the/output/to/be/generated/python.py \
+    message_definitions/v1.0/all.xml
 ```
+
+Now you have all messages including the sv_msg_defs mavlink dialect in your:
+path/to/where/you/want/the/output/to/be/generated
+
+Nice.
