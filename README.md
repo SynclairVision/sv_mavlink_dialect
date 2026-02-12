@@ -50,6 +50,8 @@ Prerequisite
 
 Install the MAVLink generator via pip:
 ```sh
+python3 -m venv .venv
+source .venv/bin/activate
 pip install pymavlink
 ```
 Avoiding Message ID Clashes
