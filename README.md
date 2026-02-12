@@ -46,7 +46,7 @@ Use the highest available version (currently `v.0.6`) unless you must match an o
 # Generating Manually
 
 If you need to modify the message definitions or regenerate the code, you must use the mavgen tool. The simplest way is to clone the mavlink repo and generate from there.
-Prerequisite
+
 
 Clone the mavlink repo
 ```sh
