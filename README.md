@@ -58,9 +58,8 @@ Crucial: When generating this dialect, it must be processed together with the st
 
 We generate sv_mavlink_dialect alongside all.xml to ensure that:
 
-    All standard MAVLink enums and messages are available to the dialect.
-
-    There are no clashes between Message IDs. The generator validates that our custom SynclairVisions messages do not overlap or conflict with standard MAVLink message IDs.
+ All standard MAVLink enums and messages are available to the dialect.
+ There are no clashes between Message IDs. The generator validates that our custom SynclairVisions messages do not overlap or conflict with standard MAVLink message IDs.
 
 # Generation Commands
 
