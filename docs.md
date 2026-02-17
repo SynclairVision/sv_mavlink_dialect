@@ -113,13 +113,13 @@ If unknown IDs are used, DigiView ignores the request.
 
 ## 3. Synclair Vision MAVLink Dialect
 
-All dialect messages use MAVLink 2 and ID range **40000–40011**.
+All dialect messages use MAVLink 2 and ID range **40000–40013**.
 
 ### 3.1 Common Concepts
 
 **stream_name**
 
-`char[16]` identifying a specific DigiView pipeline/stream.
+`char[8]` identifying a specific DigiView pipeline/stream.
 
 **cam_id**
 
@@ -175,10 +175,11 @@ The following messages can be directly **SET** by sending the MAVLink message, a
 
 Reports DigiView system status and errors.
 
-| Field  | Type     | Description      |
-|--------|----------|------------------|
-| status | uint8_t  | Status code.     |
-| error  | uint8_t  | Error code.      |
+| Field       | Type    | Description                      |
+|-------------|---------|----------------------------------|
+| status      | uint8_t | Status code.                     |
+| error       | uint8_t | Error code.                      |
+| jetson_temp | float   | Jetson module temperature (deg C). |
 
 **Usage:**
 
@@ -191,11 +192,11 @@ Read-only; used for monitoring.
 
 AI runtime and model selection.
 
-| Field            | Type        | Description                     |
-|------------------|-------------|---------------------------------|
-| run_ai           | int8_t      | 1=run, 0=stop AI                |
-| crop_model_name  | char[16]    | Crop model name                 |
-| var_model_name   | char[16]    | VAR model name                  |
+| Field            | Type     | Description                              |
+|------------------|----------|------------------------------------------|
+| run_ai           | uint8_t  | 1=run, 0=stop AI                         |
+| track_model_name | char[16] | Tracking model name         |
+| scan_model_name  | char[16] | Detection model name                |
 
 **SET:** Enable/disable AI, change models.
 
@@ -222,17 +223,18 @@ Generic model configuration.
 
 Video layout, resolution and overlay configuration.
 
-| Field                  | Type        | Description                     |
-|------------------------|-------------|---------------------------------|
-| stream_name            | char[16]    | Stream identifier, see Common Concepts |
-| width, height          | uint16_t    | Output resolution               |
-| fps                    | uint8_t     | Output framerate               |
-| layout_mode            | uint8_t     | Layout mode, see Enums         |
-| detection_overlay_mode | uint8_t     | Detection overlay mode, see Enums |
-| views_x[4], views_y[4] | uint16_t    | View positions on output      |
-| views_w[4], views_h[4] | uint16_t    | View sizes on output          |
-| overlay_x,y,w,h        | uint16_t    | Overlay position and size     |
-| single_detection_size  | uint16_t    | Size of single detection overlay |
+| Field                         | Type        | Description                          |
+|-------------------------------|-------------|--------------------------------------|
+| stream_name                   | char[8]     | Stream identifier, see Common Concepts |
+| width, height                 | uint16_t    | Output resolution                    |
+| fps                           | uint8_t     | Output framerate                     |
+| layout_mode                   | uint8_t     | Layout mode, see Enums               |
+| detection_overlay_mode        | uint8_t     | Detection overlay mode, see Enums    |
+| num_user_views                | uint8_t     | Number of active user views          |
+| views_x[4], views_y[4]        | uint16_t    | View positions on output             |
+| views_w[4], views_h[4]        | uint16_t    | View sizes on output                 |
+| detection_overlay_x,y,w,h     | uint16_t    | Overlay position and size            |
+| single_detection_size         | uint16_t    | Size of single detection overlay     |
 
 Controls how output frames are composed.
 
@@ -246,13 +248,13 @@ Controls how output frames are composed.
 
 Still image and video recording.
 
-| Field            | Type       | Description                     |
-|------------------|------------|---------------------------------|
-| stream_name      | char[16]   | Stream identifier, see Common Concepts |
-| cap_single_image | int8_t     | Trigger still image capture     |
-| record_video     | int8_t     | Toggle video recording          |
-| images_captured  | uint16_t   | Number of images captured       |
-| videos_captured  | uint16_t   | Number of videos recorded       |
+| Field            | Type     | Description                           |
+|------------------|----------|---------------------------------------|
+| stream_name      | char[8]  | Stream identifier, see Common Concepts |
+| cap_single_image | uint8_t  | Trigger still image capture           |
+| record_video     | uint8_t  | Toggle video recording                |
+| images_captured  | uint16_t | Number of images captured             |
+| videos_captured  | uint16_t | Number of videos recorded             |
 
 **SET:**
 - Trigger stills
@@ -267,21 +269,19 @@ Still image and video recording.
 
 Detection/AI thresholds and heuristic weight configuration.
 
-| Field                      | Type      | Description                     |
-|----------------------------|-----------|---------------------------------|
-| mode                       | uint8_t   | Detection mode, see Enums      |
-| sorting_mode               | uint8_t   | Sorting mode, see Enums        |
-| crop_confidence_threshold  | float     | Confidence threshold for tracked detections |
-| var_confidence_threshold   | float     | Confidence threshold for new detections |
-| crop_box_limit             | uint16_t  | Maximum number of crop detections |
-| var_box_limit              | uint16_t  | Maximum number of VAR detections |
-| crop_box_overlap           | float     | Overlap threshold for crop detections |
-| var_box_overlap            | float     | Overlap threshold for VAR detections |
-| creation_score_scale       | uint8_t   | Score scaling for detection creation |
-| bonus_detection_scale      | uint8_t   | Bonus scaling for detections |
-| bonus_redetection_scale    | uint8_t   | Bonus scaling for redetections |
-| missed_detection_penalty   | uint8_t   | Penalty for missed detections |
-| missed_redetection_penalty | uint8_t   | Penalty for missed redetections |
+| Field                      | Type    | Description                                   |
+|----------------------------|---------|-----------------------------------------------|
+| mode                       | uint8_t | Detection mode, see Enums                     |
+| sorting_mode               | uint8_t | Sorting mode, see Enums                       |
+| track_confidence_threshold | float   | Confidence threshold when tracking            |
+| scan_confidence_threshold  | float   | Confidence threshold when scanning            |
+| track_box_overlap          | float   | Max overlap between track boxes               |
+| scan_box_overlap           | float   | Max overlap between scan boxes                |
+| creation_score_scale       | uint8_t | Score scaling for detection creation          |
+| bonus_detection_scale      | uint8_t | Score bonus when found during scanning        |
+| bonus_redetection_scale    | uint8_t | Score bonus when found during tracking        |
+| missed_detection_penalty   | uint8_t | Penalty when expected but missed in scanning  |
+| missed_redetection_penalty | uint8_t | Penalty when expected but missed in tracking  |
 
 Controls the behavior of the detection engine.
 **SET:** Configure detection behavior.
@@ -296,22 +296,24 @@ Controls the behavior of the detection engine.
 
 ROI/detection export: orientation and geolocation.
 
-| Field            | Type    | Description                     |
-|------------------|---------|---------------------------------|
-| index            | uint8_t | Detection index (1-based)      |
-| score            | uint8_t | Detection score                |
-| total_detections | uint8_t | Total number of detections     |
-| yaw_abs          | float   | Yaw direction to detection relative to true north |
-| pitch_abs        | float   | Pitch angle to detection relative to horizon |
-| yaw_rel          | float   | Yaw direction to detection relative to system forward |
-| pitch_rel        | float   | Pitch angle to detection relative to system forward |
-| latitude         | float   | Latitude (currently unused)    |
-| longitude        | float   | Longitude (currently unused)   |
-| altitude         | float   | Altitude (currently unused)    |
-| distance         | float   | Distance (currently unused)    |
+| Field                  | Type    | Description                                      |
+|------------------------|---------|--------------------------------------------------|
+| index                  | uint8_t | Detection index (255 for all detections)     |
+| score                  | uint8_t | Detection score                                  |
+| total_detections       | uint8_t | Number of detections returned across messages    |
+| type                   | int16_t | Detection class                                  |
+| yaw_global             | float   | Global yaw in radians (vs true north)            |
+| pitch_global           | float   | Global pitch in radians (vs true north)          |
+| rel_frame_of_reference | uint8_t | Frame of reference for relative yaw/pitch        |
+| yaw_rel                | float   | Relative yaw in radians (vs camera center axis)  |
+| pitch_rel              | float   | Relative pitch in radians (vs camera center axis)|
+| latitude               | float   | Detection latitude            |
+| longitude              | float   | Detection longitude           |
+| altitude               | float   | Detection altitude (m)         |
+| distance               | float   | Distance to object (m, currently unused)         |
 
 **GET only** (streamable).
-One message per detection; zero-detection case returns one message with `total_detections=0`. Set index to 0 to retrieve all detections in sequence. Set index > 0 up to `total_detections` to retrieve specific detection.
+One message per detection; zero-detection case returns one message with `total_detections=0`. Use index 255 for all detections; use a 1-based index to retrieve a specific detection.
 
 ---
 
@@ -319,18 +321,18 @@ One message per detection; zero-detection case returns one message with `total_d
 
 High-level user camera targeting.
 
-| Field            | Type       | Description                     |
-|------------------|------------|---------------------------------|
-| stream_name      | char[16]   | Stream identifier, see Common Concepts |
-| cam_id           | uint8_t    | Camera ID, see Common Concepts |
-| targeting_mode   | uint8_t    | Targeting mode, see Enums |
-| euler_delta      | uint8_t    | 1=relative, 0=absolute Euler angles |
-| yaw, pitch, roll | float      | Euler angles (degrees) |
-| lock_flags       | uint8_t    | Axis lock flags (bit 0=roll, 1=pitch, 2=yaw) |
-| x_offset,y_offset| float      | Screen/pixel offsets |
-| target_latitude  | float      | Target latitude (degrees) |
-| target_longitude | float      | Target longitude (degrees) |
-| target_altitude  | float      | Target altitude (meters) |
+| Field            | Type    | Description                                  |
+|------------------|---------|----------------------------------------------|
+| stream_name      | char[8] | Stream identifier, see Common Concepts       |
+| cam_id           | uint8_t | Camera ID, see Common Concepts               |
+| targeting_mode   | uint8_t | Targeting mode, see Enums                    |
+| euler_delta      | uint8_t | 1=relative, 0=absolute Euler angles          |
+| yaw, pitch, roll | float   | Euler angles (radians)                       |
+| lock_flags       | uint8_t | Axis lock flags (bit 0=roll, 1=pitch, 2=yaw) |
+| x_offset,y_offset| float   | Normalized view offsets [-1.0, 1.0]          |
+| target_latitude  | float   | Target latitude                              |
+| target_longitude | float   | Target longitude                             |
+| target_altitude  | float   | Target altitude (m)                          |
 
 **SET:** Configure camera targeting.
 
@@ -342,45 +344,78 @@ High-level user camera targeting.
 
 Zoom, FOV, crop mode.
 
-| Field      | Type     | Description                     |
-|------------|----------|---------------------------------|
-| stream_name| char[16] | Stream identifier, see Common Concepts |
-| cam_id     | uint8_t  | Camera ID, see Common Concepts |
-| zoom       | int8_t   | Zoom in/out (degrees delta)    |
-| fov        | float    | Field of view (degrees)        |
-| crop_mode  | uint8_t  | Crop mode, see Enums         |
+| Field      | Type    | Description                                   |
+|------------|---------|-----------------------------------------------|
+| stream_name| char[8] | Stream identifier, see Common Concepts        |
+| cam_id     | uint8_t | Camera ID, see Common Concepts                |
+| zoom       | int8_t  | Zoom control (degrees delta)        |
+| fov        | float   | Field of view (radians)                       |
+| crop_mode  | uint8_t | Crop mode, see Enums                          |
 
 ---
 
 ### 4.10 `SV_CAM_OFFSET_PARAMETERS` (ID 40009)
 
 Currently disabled.
-
 ---
 
 ### 4.11 `SV_SENSOR_PARAMETERS` (ID 40010)
 
 Sensor exposure and gain configuration.
 
-| Field            | Type     | Description                     |
-|------------------|----------|---------------------------------|
-| min_exposure     | uint32_t | Minimum exposure time (microseconds) |
-| max_exposure     | uint32_t | Maximum exposure time (microseconds) |
-| min_gain         | uint32_t | Minimum gain                   |
-| max_gain         | uint32_t | Maximum gain                   |
-| target_brightness| uint32_t | Target brightness level (-2 to 2)       |
+| Field            | Type     | Description                              |
+|------------------|----------|------------------------------------------|
+| min_exposure     | uint32_t | Minimum exposure time (microseconds)     |
+| max_exposure     | uint32_t | Maximum exposure time (microseconds)     |
+| min_gain         | uint32_t | Minimum gain                             |
+| max_gain         | uint32_t | Maximum gain                             |
+| target_brightness| float    | Target brightness level                  |
 ---
 
 ### 4.12 `SV_CAM_DEPTH_ESTIMATION_PARAMETERS` (ID 40011)
 
-Depth estimation mode and fixed depth.
+Depth estimation mode and depth parameter.
 
-| Field                 | Type     | Description                     |
-|-----------------------|----------|---------------------------------|
-| stream_name           | char[16] | Stream identifier, see Common Concepts |
-| cam_id                | uint8_t  | Camera ID, see Common Concepts |
-| depth_estimation_mode | uint8_t  | Depth estimation mode, see Enums |
-| depth                 | float    | Fixed depth (meters)             |
+| Field                 | Type    | Description                                  |
+|-----------------------|---------|----------------------------------------------|
+| stream_name           | char[8] | Stream identifier, see Common Concepts       |
+| cam_id                | uint8_t | Camera ID, see Common Concepts               |
+| depth_estimation_mode | uint8_t | Depth estimation mode, see Enums             |
+| depth                 | float   | Depth value / parameter (implementation-specific) |
+
+---
+
+### 4.13 `SV_SINGLE_TARGET_TRACKING_PARAMETERS` (ID 40012)
+
+Single target tracking control and current state.
+
+| Field                  | Type    | Description                                  |
+|------------------------|---------|----------------------------------------------|
+| command                | uint8_t | Tracking command        |
+| stream_name            | char[8] | Stream identifier, see Common Concepts       |
+| cam_id                 | uint8_t | Camera ID, see Common Concepts               |
+| x_offset               | float   | Normalized horizontal offset [-1.0, 1.0]     |
+| y_offset               | float   | Normalized vertical offset [-1.0, 1.0]       |
+| detection_id           | uint8_t | Detection ID to follow when relevant         |
+| zoom_level             | uint16_t | Tracking zoom level          |
+| confidence             | float   | System confidence in current target          |
+| yaw_global             | float   | Global yaw in radians                        |
+| pitch_global           | float   | Global pitch in radians                      |
+| rel_frame_of_reference | uint8_t | Frame of reference for relative yaw/pitch    |
+| yaw_rel                | float   | Relative yaw in radians                      |
+| pitch_rel              | float   | Relative pitch in radians                    |
+
+---
+
+### 4.14 `SV_CALIBRATION_PARAMETERS` (ID 40013)
+
+Camera calibration command and status.
+
+| Field         | Type    | Description           |
+|---------------|---------|-----------------------|
+| cam_id        | uint8_t | Camera index          |
+| calib_command | uint8_t | Calibration command   |
+| calib_status  | uint8_t | Calibration status    |
 
 ---
 
