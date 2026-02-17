@@ -3,7 +3,7 @@
 This document describes how to control and monitor Synclair Vision’s DigiView software over MAVLink:
 
 - Which standard MAVLink messages DigiView consumes/emits.
-- The Synclair Vision MAVLink dialect messages (`SV_*`) and how to use them.
+- The Synclair Vision MAVLink dialect messages and how to use them.
 - How to use `MESSAGE_INTERVAL` to poll or stream DigiView state.
 
 The dialect is defined in `sv_msg_defs.xml`.
@@ -96,14 +96,14 @@ To **request DigiView state**, send a standard MAVLink:
 
 `MESSAGE_INTERVAL`:
 
-message_id = <ID of `SV_*` message>
+message_id = <ID of dialect message>
 
 interval_us = 0 for one-shot, >0 for periodic streaming
 
 DigiView will:
 
 - Validate the message ID.
-- Return the corresponding `SV_*` message once or at the requested interval.
+- Return the corresponding dialect message once or at the requested interval.
 - Respond to the request with `COMMAND_ACK` (`MAV_RESULT_ACCEPTED`) when valid.
 
 If unknown IDs are used, DigiView ignores the request.
@@ -127,41 +127,41 @@ All dialect messages use MAVLink 2 and ID range **40000–40013**.
 
 ### 3.2 Enums
 
-**SV_LAYOUT_MODE:**
-- `0` - SV_LAYOUT_SINGLE
-- `1` - SV_LAYOUT_2_STACKED
-- `2` - SV_LAYOUT_2_SIDE_BY_SIDE
-- `3` - SV_LAYOUT_2_SIDE_BY_SIDE_1_STACKED
-- `4` - SV_LAYOUT_4
-- `5` - SV_LAYOUT_3_SIDE_BY_SIDE_1_STACKED
+**LAYOUT_MODE:**
+- `0` - LAYOUT_SINGLE
+- `1` - LAYOUT_2_STACKED
+- `2` - LAYOUT_2_SIDE_BY_SIDE
+- `3` - LAYOUT_2_SIDE_BY_SIDE_1_STACKED
+- `4` - LAYOUT_4
+- `5` - LAYOUT_3_SIDE_BY_SIDE_1_STACKED
 
-**SV_DETECTION_OVERLAY_MODE:**
-- `0` - SV_DET_OVERLAY_NONE
-- `1` - SV_DET_OVERLAY_SINGLE_TOP_RIGHT
-- `2` - SV_DET_OVERLAY_COLUMN_RIGHT
-- `3` - SV_DET_OVERLAY_COLUMN_LEFT
-- `4` - SV_DET_OVERLAY_ROW_TOP
-- `5` - SV_DET_OVERLAY_ROW_BOTTOM
+**DETECTION_OVERLAY_MODE:**
+- `0` - DET_OVERLAY_NONE
+- `1` - DET_OVERLAY_SINGLE_TOP_RIGHT
+- `2` - DET_OVERLAY_COLUMN_RIGHT
+- `3` - DET_OVERLAY_COLUMN_LEFT
+- `4` - DET_OVERLAY_ROW_TOP
+- `5` - DET_OVERLAY_ROW_BOTTOM
 
-**SV_DETECTION_MODE:**
-- `0` - SV_DET_MODE_STANDARD
+**DETECTION_MODE:**
+- `0` - DET_MODE_STANDARD
 
-**SV_SORTING_MODE:**
-- `0` - SV_SORT_STANDARD
+**SORTING_MODE:**
+- `0` - SORT_STANDARD
 
-**SV_TARGETING_MODE:**
-- `0` - SV_TRG_DIRECTIONAL
-- `1` - SV_TRG_COORDINAL
-- `2` - SV_TRG_DETECTION
-- `3` - SV_TRG_SINGLE_TARGET_TRACKING
+**TARGETING_MODE:**
+- `0` - TRG_DIRECTIONAL
+- `1` - TRG_COORDINAL
+- `2` - TRG_DETECTION
+- `3` - TRG_SINGLE_TARGET_TRACKING
 
-**SV_CROP_MODE:**
-- `0` - SV_CROP_NONE
-- `1` - SV_CROP_CARTESIAN
-- `2` - SV_CROP_PANORAMA
+**CROP_MODE:**
+- `0` - CROP_NONE
+- `1` - CROP_CARTESIAN
+- `2` - CROP_PANORAMA
 
-**SV_DEPTH_ESTIMATION_MODE:**
-- `0` - SV_DEPTH_OFF
+**DEPTH_ESTIMATION_MODE:**
+- `0` - DEPTH_OFF
 
 ---
 
@@ -171,7 +171,7 @@ The following messages can be directly **SET** by sending the MAVLink message, a
 
 ---
 
-### 4.1 `SV_SYSTEM_STATUS_PARAMETERS` (ID 40000)
+### 4.1 `SYSTEM_STATUS_PARAMETERS` (ID 40000)
 
 Reports DigiView system status and errors.
 
@@ -188,7 +188,7 @@ Read-only; used for monitoring.
 
 ---
 
-### 4.2 `SV_AI_PARAMETERS` (ID 40001)
+### 4.2 `AI_PARAMETERS` (ID 40001)
 
 AI runtime and model selection.
 
@@ -205,7 +205,7 @@ AI runtime and model selection.
 
 ---
 
-### 4.3 `SV_MODEL_PARAMETERS` (ID 40002)
+### 4.3 `MODEL_PARAMETERS` (ID 40002)
 
 Generic model configuration.
 
@@ -219,7 +219,7 @@ Generic model configuration.
 
 ---
 
-### 4.4 `SV_VIDEO_OUTPUT_PARAMETERS` (ID 40003)
+### 4.4 `VIDEO_OUTPUT_PARAMETERS` (ID 40003)
 
 Video layout, resolution and overlay configuration.
 
@@ -244,7 +244,7 @@ Controls how output frames are composed.
 
 ---
 
-### 4.5 `SV_CAPTURE_PARAMETERS` (ID 40004)
+### 4.5 `CAPTURE_PARAMETERS` (ID 40004)
 
 Still image and video recording.
 
@@ -265,7 +265,7 @@ Still image and video recording.
 
 ---
 
-### 4.6 `SV_DETECTION_PARAMETERS` (ID 40005)
+### 4.6 `DETECTION_PARAMETERS` (ID 40005)
 
 Detection/AI thresholds and heuristic weight configuration.
 
@@ -292,7 +292,7 @@ Controls the behavior of the detection engine.
 
 ---
 
-### 4.7 `SV_DETECTED_ROI_PARAMETERS` (ID 40006)
+### 4.7 `DETECTED_ROI_PARAMETERS` (ID 40006)
 
 ROI/detection export: orientation and geolocation.
 
@@ -317,7 +317,7 @@ One message per detection; zero-detection case returns one message with `total_d
 
 ---
 
-### 4.8 `SV_CAM_TARGETING_PARAMETERS` (ID 40007)
+### 4.8 `CAM_TARGETING_PARAMETERS` (ID 40007)
 
 High-level user camera targeting.
 
@@ -340,7 +340,7 @@ High-level user camera targeting.
 
 ---
 
-### 4.9 `SV_CAM_OPTICS_AND_CONTROL_PARAMETERS` (ID 40008)
+### 4.9 `CAM_OPTICS_AND_CONTROL_PARAMETERS` (ID 40008)
 
 Zoom, FOV, crop mode.
 
@@ -354,12 +354,12 @@ Zoom, FOV, crop mode.
 
 ---
 
-### 4.10 `SV_CAM_OFFSET_PARAMETERS` (ID 40009)
+### 4.10 `CAM_OFFSET_PARAMETERS` (ID 40009)
 
 Currently disabled.
 ---
 
-### 4.11 `SV_SENSOR_PARAMETERS` (ID 40010)
+### 4.11 `SENSOR_PARAMETERS` (ID 40010)
 
 Sensor exposure and gain configuration.
 
@@ -372,7 +372,7 @@ Sensor exposure and gain configuration.
 | target_brightness| float    | Target brightness level                  |
 ---
 
-### 4.12 `SV_CAM_DEPTH_ESTIMATION_PARAMETERS` (ID 40011)
+### 4.12 `CAM_DEPTH_ESTIMATION_PARAMETERS` (ID 40011)
 
 Depth estimation mode and depth parameter.
 
@@ -385,7 +385,7 @@ Depth estimation mode and depth parameter.
 
 ---
 
-### 4.13 `SV_SINGLE_TARGET_TRACKING_PARAMETERS` (ID 40012)
+### 4.13 `SINGLE_TARGET_TRACKING_PARAMETERS` (ID 40012)
 
 Single target tracking control and current state.
 
@@ -407,7 +407,7 @@ Single target tracking control and current state.
 
 ---
 
-### 4.14 `SV_CALIBRATION_PARAMETERS` (ID 40013)
+### 4.14 `CALIBRATION_PARAMETERS` (ID 40013)
 
 Camera calibration command and status.
 
@@ -422,8 +422,8 @@ Camera calibration command and status.
 ## 5. Integrating DigiView via MAVLink
 
 1. **Connect** via UDP port 14550.
-2. **Control gimbal** using Gimbal Protocol v2 or `SV_CAM_TARGETING_PARAMETERS`.
-3. **Configure DigiView** using the `SV_*` dialect messages.
-4. **Poll/stream state** using `MESSAGE_INTERVAL` with any `SV_*` message ID.
+2. **Control gimbal** using Gimbal Protocol v2 or `CAM_TARGETING_PARAMETERS`.
+3. **Configure DigiView** using the dialect messages.
+4. **Poll/stream state** using `MESSAGE_INTERVAL` with any dialect message ID.
 
 This provides a full MAVLink-native control and telemetry system for DigiView.
