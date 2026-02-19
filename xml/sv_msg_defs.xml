@@ -223,5 +223,11 @@ angles.</field>
             <field type="uint8_t" name="calib_status">Calibration status.</field>
         </message>
 
+        <message id="40014" name="NAVIGATION_PARAMETERS">
+            <description>Navigation parameters.</description>
+
+            <field type="float" name="altitude">Navigation altitude in meters.</field>
+        </message>
+
     </messages>
 </mavlink>
