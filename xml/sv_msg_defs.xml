@@ -107,13 +107,13 @@
 
             <field type="int16_t" name="type">Detection class.</field>
 
-            <field type="float"   name="yaw_global">Global yaw in radians (Tait-Bryan, vs true north).</field>
-            <field type="float"   name="pitch_global">Global pitch in radians (vs true north).</field>
+            <field type="float"   name="yaw_global">Global yaw in degrees (Tait-Bryan, vs true north).</field>
+            <field type="float"   name="pitch_global">Global pitch in degrees (vs true north).</field>
             
             <field type="uint8_t" name="rel_frame_of_reference">Indicates the frame of reference for the relative yaw and pitch angles.</field>
 
-            <field type="float"   name="yaw_rel">Relative yaw in radians (vs camera center axis).</field>
-            <field type="float"   name="pitch_rel">Relative pitch in radians (vs camera center axis).</field>
+            <field type="float"   name="yaw_rel">Relative yaw in degrees (vs camera center axis).</field>
+            <field type="float"   name="pitch_rel">Relative pitch in degrees (vs camera center axis).</field>
             <field type="float"   name="latitude">Detection latitude, currently 0 if not implemented.</field>
             <field type="float"   name="longitude">Detection longitude, currently 0 if not implemented.</field>
             <field type="float"   name="altitude">Detection altitude (m), currently 0 if not implemented.</field>
@@ -129,11 +129,11 @@
             <field type="uint8_t" name="targeting_mode">Targeting mode, see SV_TARGETING_MODE.</field>
             <field type="uint8_t" name="euler_delta">1 if yaw/pitch/roll are deltas, 0 if absolute.</field>
 
-            <field type="float"   name="yaw">Yaw in radians (global frame, Tait-Bryan).</field>
-            <field type="float"   name="pitch">Pitch in radians (global frame, Tait-Bryan).</field>
-            <field type="float"   name="roll">Roll in radians (currently ignored).</field>
+            <field type="float"   name="yaw">Yaw in degrees (global frame, Tait-Bryan).</field>
+            <field type="float"   name="pitch">Pitch in degrees (global frame, Tait-Bryan).</field>
+            <field type="float"   name="roll">Roll in degrees (currently ignored).</field>
 
-            <field type="uint8_t" name="lock_flags">Bitmask locking yaw/pitch/roll stabilization.</field>
+            <field type="uint8_t" name="lock_flags">3-bit combinable yaw/pitch/roll lock mask: 0x01=yaw, 0x02=pitch, 0x04=roll; set bit=locked/stabilized to global frame, clear bit=follows system frame.</field>
 
             <field type="float"   name="x_offset">Horizontal offset in view, [-1.0, 1.0].</field>
             <field type="float"   name="y_offset">Vertical offset in view, [-1.0, 1.0].</field>
@@ -148,7 +148,7 @@
             <field type="char[8]" name="stream_name">Stream name (max 8 characters).</field>
             <field type="uint8_t" name="cam_id">Camera index on the stream.</field>
             <field type="int8_t"  name="zoom">Zoom control, -127..127 (negative=zoom out, positive=zoom in).</field>
-            <field type="float"   name="fov">Field of view in radians (typical range ~[0.1, 3.14]).</field>
+            <field type="float"   name="fov">Field of view in degrees (typical range ~[1, 180.0]).</field>
             <field type="uint8_t" name="crop_mode">Crop mode, see SV_CROP_MODE.</field>            
         </message>
 
@@ -161,10 +161,10 @@
 
             <field type="float"   name="x">Horizontal offset in view, [-1.0, 1.0].</field>
             <field type="float"   name="y">Vertical offset in view, [-1.0, 1.0].</field>
-            <field type="float"   name="yaw_global">Global yaw in radians (vs true north).</field>
-            <field type="float"   name="pitch_global">Global pitch in radians (vs true north).</field>
-            <field type="float"   name="yaw_rel">Relative yaw in radians (vs camera center axis).</field>
-            <field type="float"   name="pitch_rel">Relative pitch in radians (vs camera center axis).</field>
+            <field type="float"   name="yaw_global">Global yaw in degrees (vs true north).</field>
+            <field type="float"   name="pitch_global">Global pitch in degrees (vs true north).</field>
+            <field type="float"   name="yaw_rel">Relative yaw in degrees (vs camera center axis).</field>
+            <field type="float"   name="pitch_rel">Relative pitch in degrees (vs camera center axis).</field>
         </message>
 
         <message id="40010" name="SENSOR_PARAMETERS">
@@ -207,12 +207,12 @@
 
             <field type="float"   name="confidence">System's confidence in the current target.</field>
 
-            <field type="float"   name="yaw_global">global yaw of target in radians.</field>
-            <field type="float"   name="pitch_global">global pitch of target in radians.</field>
+            <field type="float"   name="yaw_global">Global yaw of target in degrees.</field>
+            <field type="float"   name="pitch_global">Global pitch of target in degrees.</field>
             <field type="uint8_t"  name="rel_frame_of_reference">Indicates the frame of reference for the relative yaw and pitch
 angles.</field>
-            <field type="float"   name="yaw_rel">Relative yaw of target in radians.</field>
-            <field type="float"   name="pitch_rel">Relative pitch of target in radians.</field>
+            <field type="float"   name="yaw_rel">Relative yaw of target in degrees.</field>
+            <field type="float"   name="pitch_rel">Relative pitch of target in degrees.</field>
         </message>
 
         <message id="40013" name="CALIBRATION_PARAMETERS">
