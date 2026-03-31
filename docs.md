@@ -292,7 +292,7 @@ Controls the behavior of the detection engine.
 
 ---
 
-### 4.7 `DETECTED_ROI_PARAMETERS` (ID 40006)
+### 4.7 `TRACKED_DETECTION_PARAMETERS` (ID 40006)
 
 ROI/detection export: orientation and geolocation.
 
